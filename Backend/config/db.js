@@ -1,0 +1,11 @@
+const mongoose=require('mongoose')
+const configdb=async()=>{
+ try { 
+    const db= await mongoose.connect(process.env.DB_URL)
+   console.log('connect to db')
+  }catch(err){
+    console.log(err)
+  }
+}
+
+module.exports=configdb
