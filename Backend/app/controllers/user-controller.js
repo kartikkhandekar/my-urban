@@ -121,7 +121,8 @@ userCltr.resetPassword=async (req, res) => {
       if (user.resetPasswordToken !== otp || user.resetPasswordExpires < Date.now()) {
         return res.status(400).json({ message: 'Invalid or expired OTP' })
       }
-      const hashedPassword = await bcryptjs.hash(newPassword, 10)
+      const salt=await bcryptjs.genSalt()
+      const hashedPassword = await bcryptjs.hash(newPassword,salt)
       user.password = hashedPassword;
       user.resetOTP = undefined
       user.otpExpires = undefined;
