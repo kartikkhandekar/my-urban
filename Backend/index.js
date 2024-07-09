@@ -9,6 +9,7 @@ const authenticateUser=require('./app/middlewares/authentication')
 const authorizeUser=require('./app/middlewares/authorization')
 const {userRegisterValidationSchema,userUpdateValidation}=require('./app/validations/user-register')
 const userLoginValidationSchema=require('./app/validations/user-login')
+const {otpValidationSchema,forgotEmailValidationSchema}=require('./app/validations/forgetPassword')
 const {serviceProviderValidation,serviceProviderUpdateValidation,adminUpdate}=require('./app/validations/serviceProvider-validations')
 const {customerValidation,customerUpdateValidation}=require('./app/validations/customer-validation')
 const {bookingValidation,bookingUpdateValidation,bookingUpdateByAdmin,bookingAccepted}=require('./app/validations/booking-validations')
@@ -26,6 +27,9 @@ app.post('/users/register',checkSchema(userRegisterValidationSchema),userCltr.re
 app.post('/users/login',checkSchema(userLoginValidationSchema),userCltr.login)
 app.put('/users/update',authenticateUser,checkSchema(userUpdateValidation),userCltr.update)
 app.get('/users/account',authenticateUser,userCltr.account)
+
+app.post('/users/forgot-password',checkSchema(forgotEmailValidationSchema),userCltr.forgotPassword)
+app.post('/users/reset-password',checkSchema(otpValidationSchema),userCltr.resetPassword)
 
 //Customer
 app.post('/customer',authenticateUser,authorizeUser(['customer']),checkSchema(customerValidation),customerCltr.create)

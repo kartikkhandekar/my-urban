@@ -2,7 +2,7 @@ const User=require('../models/user-model')
 const bcryptjs=require('bcryptjs')
 const jwt=require('jsonwebtoken')
 const {validationResult}=require('express-validator')
-const { findOneAndUpdate } = require('../models/review-model')
+const sendOTPEmail=require('../utils/mail')
 const userCltr={}
 
 userCltr.register=async(req,res)=>{
@@ -66,7 +66,7 @@ userCltr.update=async (req,res)=>{
             const update=await User.findOneAndUpdate({_id:req.user.id},body,{new:true})
             return res.status(200).json(update)
         }
-        res.status(400).json({error:'You cannot update this record'})
+        res.status(404).json({error:'You cannot update this record'})
 
     }catch(err){
         res.status(500).json({ errors: 'something went wrong'})
@@ -82,5 +82,59 @@ userCltr.account = async (req, res) => {
         res.status(500).json({ error: 'something went wrong'})
     }
 }
+
+
+userCltr.forgotPassword=async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+    const { email } = req.body; // Only email is needed
+    try {
+      const user = await User.findOne({ email });
+      if (!user) {
+        return res.status(404).json({ message: 'No user found registered with this email' });
+      }
+      // Send OTP email and get the OTP
+      const otp = await sendOTPEmail(email,user.username);
+      console.log(otp)
+      // Store the OTP in the user's record with an expiration time (e.g., 10 minutes)
+      user.resetPasswordToken = otp;
+      user.resetPasswordExpires = Date.now() + 10 * 60 * 1000; // 10 minutes
+      await user.save();
+      res.status(200).json(user);
+    } catch (error) {
+      res.status(500).json({ message: 'Server error' });
+    }
+  };
+  
+  //reset password
+userCltr.resetPassword=async (req, res) => {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).json({ errors: errors.array() });
+    }
+    const { email, otp, newPassword } = req.body;
+    try {
+      const user = await User.findOne({ email });
+      if (!user) {
+        return res.status(404).json({ message: 'User not found' });
+      }
+      // Check if OTP is valid and not expired
+      if (user.resetPasswordToken !== otp || user.resetPasswordExpires < Date.now()) {
+        return res.status(400).json({ message: 'Invalid or expired OTP' });
+      }
+      // Hash the new password and save it
+      const hashedPassword = await bcryptjs.hash(newPassword, 10);
+      user.password = hashedPassword;
+      user.resetOTP = undefined; // Clear the OTP fields
+      user.otpExpires = undefined;
+      await user.save();
+      res.status(200).json({ message: 'Password reset successful' });
+    } catch (error) {
+        console.log(error)
+      res.status(500).json({ message: 'Server error' });
+    }
+  };
 
 module.exports=userCltr

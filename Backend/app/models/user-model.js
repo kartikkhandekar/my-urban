@@ -5,6 +5,8 @@ const userSchema=new Schema({
     email:String,
     password:String,
     role:String,
+    resetPasswordToken:String,
+    resetPasswordExpires:String
     
 
 },{timestamps:true})
