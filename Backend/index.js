@@ -57,6 +57,7 @@ app.put('/booking/admin/:bookingId',authenticateUser,authorizeUser(['admin']),ch
 app.put("/booking/provider/:providerId/booking/:bookingId",authenticateUser,authorizeUser(['service-provider']),checkSchema(bookingAccepted),bookingCltr.accepted)
 app.delete('/booking/:bookingId',authenticateUser,authorizeUser(['customer']),bookingCltr.delete)
 
+
 //Review
 app.post('/review/provider/:providerId',authenticateUser,authorizeUser(['customer']),checkSchema(reviewValidation),reviewcltr.create)
 app.put('/review/provider/:providerId/review/:reviewId',authenticateUser,authorizeUser(['customer']),checkSchema(reviewValidation),reviewcltr.update)

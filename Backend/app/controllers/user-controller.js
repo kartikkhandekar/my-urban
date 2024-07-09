@@ -123,9 +123,9 @@ userCltr.resetPassword=async (req, res) => {
       }
       const salt=await bcryptjs.genSalt()
       const hashedPassword = await bcryptjs.hash(newPassword,salt)
-      user.password = hashedPassword;
-      user.resetOTP = undefined
-      user.otpExpires = undefined;
+      user.password = hashedPassword
+      user.resetPasswordToken = undefined
+      user.resetPasswordExpires = undefined
       await user.save()
       res.status(200).json({ message: 'Password reset successful' })
     } catch (error) {
