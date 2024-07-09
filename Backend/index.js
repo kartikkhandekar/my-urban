@@ -56,7 +56,7 @@ app.post('/review/provider/:providerId',authenticateUser,authorizeUser(['custome
 app.put('/review/provider/:providerId/review/:reviewId',authenticateUser,authorizeUser(['customer']),checkSchema(reviewValidation),reviewcltr.update)
 app.get('/review/provider/:providerId/review/:reviewId',authenticateUser,authorizeUser(['customer','admin']),reviewcltr.single)
 app.get('/review/provider/:providerId',authenticateUser,authorizeUser(['customer','admin']),reviewcltr.particularProvider)
-app.get('/review',authenticateUser,reviewcltr.all)
+app.get('/review',reviewcltr.all)
 app.delete('/review/provider/:providerId/review/:reviewId',authenticateUser,authorizeUser(['customer',]),reviewcltr.delete)
 
 

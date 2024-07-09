@@ -58,7 +58,6 @@ userCltr.update=async (req,res)=>{
     }
     try{
         const user=await User.findById(req.user.id)
-        const all=await User.find()
         const body=req.body
         if( user.role == body.role) {
             const salt=await bcryptjs.genSalt()
