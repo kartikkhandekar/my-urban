@@ -1,7 +1,7 @@
 const nodemailer = require('nodemailer');
 
 const transporter = nodemailer.createTransport({
-  service: 'gmail', // You can use other services like SendGrid, Mailgun, etc.
+  service: 'gmail', 
   auth: {
     user:process.env.EMAIL,
     pass: process.env.PASS_KEY,
@@ -9,11 +9,11 @@ const transporter = nodemailer.createTransport({
 });
 
 const generateOTP = () => {
-    return Math.floor(100000 + Math.random() * 900000).toString(); // Generates a 6-digit OTP
+    return Math.floor(100000 + Math.random() * 900000).toString(); 
   };
   
 const sendOTPEmail = async (email, username) => {
-    const otp = generateOTP(); // Generate OTP
+    const otp = generateOTP()
     const mailOptions = {
       from: process.env.EMAIL,
       to: email,
@@ -33,7 +33,7 @@ const sendOTPEmail = async (email, username) => {
     try {
       await transporter.sendMail(mailOptions);
       console.log('OTP email sent successfully');
-      return otp; // Return the generated OTP for further processing
+      return otp
     } catch (error) {
       console.error('Error sending OTP email:', error);
       throw new Error('Failed to send OTP email');
