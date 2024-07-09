@@ -38,6 +38,7 @@ app.delete('/customer/:customerId',authenticateUser,authorizeUser(['customer']),
 app.get('/customer/all',customerCltr.allCustomers)
 app.get('/customer/:customerId',authenticateUser,authorizeUser(['admin','customer']),customerCltr.singleCustomer)
 
+
 //ServiceProvider
 app.post('/provider',authenticateUser,authorizeUser(['service-provider']),checkSchema(serviceProviderValidation),serviceProviderCltr.create)
 app.put('/provider/:serviceId',authenticateUser,authorizeUser(["service-provider"]),checkSchema(serviceProviderUpdateValidation),serviceProviderCltr.update)
@@ -45,6 +46,7 @@ app.put('/provider/admin/:id',authenticateUser,authorizeUser(['admin']),checkSch
 app.get('/provider/all',serviceProviderCltr.allProviders)
 app.get('/provider/:id',authenticateUser,authorizeUser(['service-provider','admin']),serviceProviderCltr.singleProvider)
 app.delete('/provider/:id',authenticateUser,authorizeUser(['service-provider']),serviceProviderCltr.delete)
+
 
 //Booking
 app.post('/booking/provider/:providerId',authenticateUser,authorizeUser(['customer']),checkSchema(bookingValidation),bookingCltr.create)
@@ -60,7 +62,7 @@ app.post('/review/provider/:providerId',authenticateUser,authorizeUser(['custome
 app.put('/review/provider/:providerId/review/:reviewId',authenticateUser,authorizeUser(['customer']),checkSchema(reviewValidation),reviewcltr.update)
 app.get('/review/provider/:providerId/review/:reviewId',authenticateUser,authorizeUser(['customer','admin']),reviewcltr.single)
 app.get('/review/provider/:providerId',authenticateUser,authorizeUser(['customer','admin']),reviewcltr.particularProvider)
-app.get('/review',reviewcltr.all)
+app.get('/review', reviewcltr.all)
 app.delete('/review/provider/:providerId/review/:reviewId',authenticateUser,authorizeUser(['customer',]),reviewcltr.delete)
 
 

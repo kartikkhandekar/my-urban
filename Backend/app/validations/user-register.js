@@ -55,7 +55,19 @@ const userRegisterValidationSchema = {
         isIn: {
             options: [['admin', 'customer','service-provider']],
             errorMessage: 'role should either be a admin,customer or service provider'
-        }, 
+        }, custom:{
+            options: async function(value){
+             const user=await User.find()
+             const result=user.some((ele)=>{
+                 return ele.role == value
+             })
+             if(result){
+                 throw new Error('you cannot register as adim')
+             }else{
+                 return true
+             }
+            } 
+         },
         trim: true 
     }
     
