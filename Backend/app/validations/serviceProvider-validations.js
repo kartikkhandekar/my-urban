@@ -21,33 +21,30 @@ const serviceProviderValidation={
         },
         trim:true
     },
-    description :{
-        exists: {
-            errorMessage: 'serviceProviderName is required'
-        },
-        notEmpty: {
-            errorMessage: 'serviceProviderName cannot be blank'
-        },
-        trim:true
-    },
     category :{
         exists: {
             errorMessage: 'category is required'
         },
         notEmpty: {
             errorMessage: 'category cannot be blank'
+        },isIn: {
+            options: [['painting of walls and furniture','AC Repair and service' ,' Electrician,plumber & Carpenter ', 'Bathroom and Kitchen cleaning' , 'Salon for kids and men','Salon for women']],
+            errorMessage: 'category should either be a painting of walls and furniture , plumber, AC Repair and service , Electrician,plumber & Carpenter , Bathroom and Kitchen cleaning , Salon for kids and men , Salon for women'
         },
-        trim:true
+        trim:true,
+        custom: {
+            options: function(value) {
+                if(!Array.isArray(value)) {
+                    throw new Error('category should be provided')
+                }
+                if(value.length == 0) {
+                    throw new Error('category consist of atleast one skill')
+                }
+                return true 
+            }
+        }
     },
-    price :{
-        exists: {
-            errorMessage: 'price is required'
-        },
-        notEmpty: {
-            errorMessage: 'price cannot be blank'
-        },
-        trim:true
-    },phone:{
+    phone:{
         exists: {
             errorMessage: 'phone is required'            
         },

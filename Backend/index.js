@@ -5,6 +5,7 @@ const serviceProviderCltr=require('./app/controllers/serviceProvider-controller'
 const customerCltr=require('./app/controllers/customer-controller')
 const bookingCltr=require('./app/controllers/booking-controllers')
 const reviewcltr=require('./app/controllers/review-contollers')
+const serviceCltr=require("./app/controllers/service-controller")
 const authenticateUser=require('./app/middlewares/authentication')
 const authorizeUser=require('./app/middlewares/authorization')
 const {userRegisterValidationSchema,userUpdateValidation}=require('./app/validations/user-register')
@@ -14,6 +15,7 @@ const {serviceProviderValidation,serviceProviderUpdateValidation,adminUpdate}=re
 const {customerValidation,customerUpdateValidation}=require('./app/validations/customer-validation')
 const {bookingValidation,bookingUpdateValidation,bookingUpdateByAdmin,bookingAccepted}=require('./app/validations/booking-validations')
 const reviewValidation=require('./app/validations/review-validatons')
+const serviceValidation=require("./app/validations/service-validation")
 const express=require('express')
 const cors=require('cors')
 const {checkSchema}=require('express-validator')
@@ -27,6 +29,7 @@ app.post('/users/register',checkSchema(userRegisterValidationSchema),userCltr.re
 app.post('/users/login',checkSchema(userLoginValidationSchema),userCltr.login)
 app.put('/users/update',authenticateUser,checkSchema(userUpdateValidation),userCltr.update)
 app.get('/users/account',authenticateUser,userCltr.account)
+app.get('/users/checkemail',userCltr.checkEmail)
 
 app.post('/users/forgot-password',checkSchema(forgotEmailValidationSchema),userCltr.forgotPassword)
 app.post('/users/reset-password',checkSchema(otpValidationSchema),userCltr.resetPassword)
@@ -47,6 +50,8 @@ app.get('/provider/all',serviceProviderCltr.allProviders)
 app.get('/provider/:id',authenticateUser,authorizeUser(['service-provider','admin']),serviceProviderCltr.singleProvider)
 app.delete('/provider/:id',authenticateUser,authorizeUser(['service-provider']),serviceProviderCltr.delete)
 
+//Service
+app.post("/service",authenticateUser,authorizeUser(['service-provider']),checkSchema(serviceValidation),serviceCltr.create)
 
 //Booking
 app.post('/booking/provider/:providerId',authenticateUser,authorizeUser(['customer']),checkSchema(bookingValidation),bookingCltr.create)

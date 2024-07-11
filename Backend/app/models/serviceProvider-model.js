@@ -8,11 +8,13 @@ const serviceProviderSchema=new Schema({
      isVerified:{
         type:Boolean,
         default:false
-     },
+     }, 
      serviceProviderName :String,
-     description :String,
-     category :String,
-     price :Number,
+     category :[String],
+     service:[{
+       type:Schema.Types.ObjectId,
+       ref:'Sevice'
+     }],
      phone:Number,
      review:[{
       type:Schema.Types.ObjectId,

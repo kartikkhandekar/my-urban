@@ -104,7 +104,7 @@ userCltr.forgotPassword=async (req, res) => {
     } catch (error) {
       res.status(500).json({ message: 'Server error' })
     }
-  };
+  }
   
 
 userCltr.resetPassword=async (req, res) => {
@@ -132,6 +132,15 @@ userCltr.resetPassword=async (req, res) => {
         console.log(error)
       res.status(500).json({ message: 'Server error' })
     }
-  };
+  }
 
+  userCltr.checkEmail=async(req,res)=>{
+    const email=req.query.email
+    const user=await User.findOne({email:email})
+    if(user){
+       res.json({'is_email_registered':true})
+    }else{
+       res.json({'is_email_registered':false})
+    }
+ }
 module.exports=userCltr
