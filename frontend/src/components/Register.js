@@ -74,9 +74,9 @@ export default function Register(){
         if(validator.isEmail(form.email)) {
             const response = await axios.get(`http://localhost:7777/users/checkemail?email=${form.email}`) 
             if(response.data.is_email_registered) {
-                     setClientErrors({email:'Email already taken'})
+                     setClientErrors({...clientErrors, email:'Email already taken'})
             }else{
-                setClientErrors({email:''})
+                setClientErrors({...clientErrors, email:''})
 
             }
         }
@@ -103,6 +103,7 @@ export default function Register(){
               value={form.username} 
               id="username" 
               name="username" 
+              onBlur={runValidations()}
               onChange={handleChange}/>
             { clientErrors && <span>{clientErrors.username}</span>}
             <br/>

@@ -4,10 +4,6 @@ const serviceProviderSchema=new Schema({
     userId: {
         type: Schema.Types.ObjectId,
              ref: 'User'
-     },
-     isVerified:{
-        type:Boolean,
-        default:false
      }, 
      serviceProviderName :String,
      category :[String],

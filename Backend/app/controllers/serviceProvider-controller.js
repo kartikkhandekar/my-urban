@@ -36,24 +36,6 @@ serviceProviderCltr.update=async(req,res)=>{
     }
 }
 
-serviceProviderCltr.updateByAdmin=async(req,res)=>{
-    const errors=validationResult(req)
-    if(!errors.isEmpty()){
-        return res.status(400).json({errors:errors.array()})
-    } 
-    try{
-        const providerId=req.params.id
-        const body=req.body
-        const response=await ServiceProvider.findById(providerId)
-        response.isVerified=body.isVerified
-        await response.save()
-        res.json(response)
-
-    }catch(err){
-        res.status(500).json({ errors: 'something went wrong'})
-
-    }
-}
 
 serviceProviderCltr.allProviders=async (req,res)=>{
    try{

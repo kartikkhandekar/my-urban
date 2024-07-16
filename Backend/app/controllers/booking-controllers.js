@@ -9,7 +9,7 @@ bookingCltr.create=async(req,res)=>{
     }
     try{
        const body=req.body
-       const serviceId=req.params.providerId
+       const serviceId=req.params.serviceId
        const booking=new Booking(body)
        booking.customerId=req.user.id
        booking.serviceProviderId=serviceId
@@ -21,7 +21,7 @@ bookingCltr.create=async(req,res)=>{
 }
 
 bookingCltr.allBookings=async(req,res)=>{
-    const bookings=await Booking.find().populate('customerId',['name','phone','address']).populate('serviceProviderId',['serviceProviderName','price','phone','address'])
+    const bookings=await Booking.find().populate('customerId',['username','email']).populate('serviceProviderId',['price','description'])
     if(bookings){
         return res.status(200).json(bookings)
     }
@@ -31,7 +31,7 @@ bookingCltr.allBookings=async(req,res)=>{
 bookingCltr.single=async (req,res)=>{
    try{
      const id=req.params.bookingId
-    const response =await Booking.findById(id).populate('customerId',['name','phone','address']).populate('serviceProviderId',['serviceProviderName','price','phone','address'])
+    const response =await Booking.findById(id).populate('customerId',['name','phone','address']).populate('serviceProviderId',['price','description'])
     res.status(200).json(response)
    }catch(err){
     res.status(500).json({error:'Something went wrong'})
@@ -76,9 +76,12 @@ bookingCltr.accepted=async (req,res)=>{
     }
     try{
       const body=req.body
-      const providerId=req.params.providerId
+      const providerId=req.params.serviceId
       const bookingId=req.params.bookingId
       const response=await Booking.findOneAndUpdate({serviceProviderId:providerId,_id:bookingId},body,{new:true})
+      if(!response){
+        return res.status(404).json({error:'Record not found'})
+      }
       res.status(200).json(response)
     }catch(err){
         res.status(500).json({error:'Somthing went wrong'})
@@ -90,10 +93,9 @@ bookingCltr.delete=async(req,res)=>{
     try{
          const response=await Booking.findOneAndDelete({customerId:req.user.id,_id:bookingId},{new:true})
          if(response){
-            res.status(200).json(response)
-         }else{
-            res.status(400).json({error:'record not found'})
+           return  res.status(200).json(response)
          }
+            res.status(400).json({error:'record not found'})
     }catch(err){
         res.status(500).json({error:'somthing wemt wrong'})
     }

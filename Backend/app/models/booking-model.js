@@ -7,7 +7,7 @@ const bookingSchema=new Schema({
     },
     serviceProviderId:{
         type:Schema.Types.ObjectId,
-        ref:'ServiceProvider'
+        ref:'Service'
     },
     date:Date,
     status:{

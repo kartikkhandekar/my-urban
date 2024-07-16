@@ -28,7 +28,7 @@ const serviceProviderValidation={
         notEmpty: {
             errorMessage: 'category cannot be blank'
         },isIn: {
-            options: [['painting of walls and furniture','AC Repair and service' ,' Electrician,plumber & Carpenter ', 'Bathroom and Kitchen cleaning' , 'Salon for kids and men','Salon for women']],
+            options: [['painting of walls and furniture','AC Repair and service' ,'Electrician,plumber & Carpenter', 'Bathroom and Kitchen cleaning' , 'Salon for kids and men','Salon for women']],
             errorMessage: 'category should either be a painting of walls and furniture , plumber, AC Repair and service , Electrician,plumber & Carpenter , Bathroom and Kitchen cleaning , Salon for kids and men , Salon for women'
         },
         trim:true,
@@ -155,15 +155,5 @@ const serviceProviderUpdateValidation={
     
 }
 
-const adminUpdate={
-    isVerified :{
-        exists: {
-            errorMessage: 'verified is required'
-        },
-        notEmpty: {
-            errorMessage: 'verified cannot be blank'
-        },
-        trim:true,
-    }
-}
-module.exports={serviceProviderValidation,serviceProviderUpdateValidation,adminUpdate}
+
+module.exports={serviceProviderValidation,serviceProviderUpdateValidation}

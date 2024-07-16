@@ -26,7 +26,28 @@ const serviceValidation={
                  }
             }
         }
+    },
+    description:{
+        exists:{
+            errorMessage:'description is required'
+        },
+        notEmpty:{
+            errorMessage:'description cannot be empty'
+        },
+        trim:true
+    },
+}
+
+const adminUpdate={
+    isVerified :{
+        exists: {
+            errorMessage: 'verified is required'
+        },
+        notEmpty: {
+            errorMessage: 'verified cannot be blank'
+        },
+        trim:true,
     }
 }
 
-module.exports=serviceValidation
+module.exports={serviceValidation,adminUpdate}

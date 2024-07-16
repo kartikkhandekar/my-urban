@@ -7,6 +7,10 @@ const serviceSchema=new Schema({
   serviceProvider:{
     type:Schema.Types.ObjectId,
     ref:'ServiceProvider'
+  },
+  isVerified:{
+     type:Boolean,
+     default:false
   }
 },{timestamps:true})
 

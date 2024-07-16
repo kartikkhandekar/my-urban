@@ -11,14 +11,14 @@ const authorizeUser=require('./app/middlewares/authorization')
 const {userRegisterValidationSchema,userUpdateValidation}=require('./app/validations/user-register')
 const userLoginValidationSchema=require('./app/validations/user-login')
 const {otpValidationSchema,forgotEmailValidationSchema}=require('./app/validations/forgetPassword')
-const {serviceProviderValidation,serviceProviderUpdateValidation,adminUpdate}=require('./app/validations/serviceProvider-validations')
+const {serviceProviderValidation,serviceProviderUpdateValidation}=require('./app/validations/serviceProvider-validations')
 const {customerValidation,customerUpdateValidation}=require('./app/validations/customer-validation')
 const {bookingValidation,bookingUpdateValidation,bookingUpdateByAdmin,bookingAccepted}=require('./app/validations/booking-validations')
 const reviewValidation=require('./app/validations/review-validatons')
-const serviceValidation=require("./app/validations/service-validation")
+const {serviceValidation,adminUpdate}=require("./app/validations/service-validation")
 const express=require('express')
 const cors=require('cors')
-const {checkSchema}=require('express-validator')
+const {checkSchema, check}=require('express-validator')
 const app=express()
 app.use(express.json())
 app.use(cors())
@@ -45,21 +45,26 @@ app.get('/customer/:customerId',authenticateUser,authorizeUser(['admin','custome
 //ServiceProvider
 app.post('/provider',authenticateUser,authorizeUser(['service-provider']),checkSchema(serviceProviderValidation),serviceProviderCltr.create)
 app.put('/provider/:serviceId',authenticateUser,authorizeUser(["service-provider"]),checkSchema(serviceProviderUpdateValidation),serviceProviderCltr.update)
-app.put('/provider/admin/:id',authenticateUser,authorizeUser(['admin']),checkSchema(adminUpdate),serviceProviderCltr.updateByAdmin)
 app.get('/provider/all',serviceProviderCltr.allProviders)
 app.get('/provider/:id',authenticateUser,authorizeUser(['service-provider','admin']),serviceProviderCltr.singleProvider)
 app.delete('/provider/:id',authenticateUser,authorizeUser(['service-provider']),serviceProviderCltr.delete)
 
 //Service
-app.post("/service",authenticateUser,authorizeUser(['service-provider']),checkSchema(serviceValidation),serviceCltr.create)
+app.post("/service/:serviceProviderId",authenticateUser,authorizeUser(['service-provider']),checkSchema(serviceValidation),serviceCltr.create)
+app.put('/service/:serviceId',authenticateUser,authorizeUser(['service-provider']),checkSchema(serviceValidation),serviceCltr.update)
+app.put('/service/:serviceId',authenticateUser,authorizeUser(['admin']),checkSchema(adminUpdate),serviceCltr.updateByAdmin)
+app.get('/service/:serviceId',authenticateUser,authorizeUser(['service-provider','admin']),serviceCltr.single)
+app.get('/service',authenticateUser,serviceCltr.all)
+app.delete('/service/:serviceId',authenticateUser,authorizeUser(['service-provider']),serviceCltr.delete)
+
 
 //Booking
-app.post('/booking/provider/:providerId',authenticateUser,authorizeUser(['customer']),checkSchema(bookingValidation),bookingCltr.create)
+app.post('/booking/provider/:serviceId',authenticateUser,authorizeUser(['customer']),checkSchema(bookingValidation),bookingCltr.create)
 app.get('/booking',authenticateUser,authorizeUser(['admin','customer','service-provider']),bookingCltr.allBookings)
 app.get('/booking/:bookingId',authenticateUser,authorizeUser(['admin','customer']),bookingCltr.single)
 app.put('/booking/:bookingId',authenticateUser,authorizeUser(['customer']),checkSchema(bookingUpdateValidation),bookingCltr.update)
 app.put('/booking/admin/:bookingId',authenticateUser,authorizeUser(['admin']),checkSchema(bookingUpdateByAdmin),bookingCltr.updateByAdmin)
-app.put("/booking/provider/:providerId/booking/:bookingId",authenticateUser,authorizeUser(['service-provider']),checkSchema(bookingAccepted),bookingCltr.accepted)
+app.put("/booking/provider/:serviceId/booking/:bookingId",authenticateUser,authorizeUser(['service-provider']),checkSchema(bookingAccepted),bookingCltr.accepted)
 app.delete('/booking/:bookingId',authenticateUser,authorizeUser(['customer']),bookingCltr.delete)
 
 

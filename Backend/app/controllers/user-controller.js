@@ -143,4 +143,5 @@ userCltr.resetPassword=async (req, res) => {
        res.json({'is_email_registered':false})
     }
  }
+ 
 module.exports=userCltr

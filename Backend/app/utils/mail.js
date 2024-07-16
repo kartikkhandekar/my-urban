@@ -28,6 +28,7 @@ const sendOTPEmail = async (email, username) => {
   
   Best regards,
   Urban Company`,
+  
     };
   
     try {
