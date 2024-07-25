@@ -48,19 +48,19 @@ export default function Login() {
                 setServerError(err.response.data.errors);
             }
         },
-    });
+    })
 
     const displayErrors = () => {
         let result;
         if (typeof serverError === 'string') {
-            result = <p className='alert alert-danger'> {serverError} </p>;
+            result = <p className='alert alert-danger'> {serverError} </p>
         } else {
             result = (
                 <div className='alert alert-danger'>
                     <h3>These errors prohibited the form from being saved: </h3>
                     <ul>
                         {serverError.map((ele, i) => {
-                            return <li key={i}> {ele.msg} </li>;
+                            return <li key={i}> {ele.msg} </li>
                         })}
                     </ul>
                 </div>

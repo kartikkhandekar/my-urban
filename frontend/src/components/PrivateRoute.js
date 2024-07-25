@@ -24,7 +24,7 @@ export default function PrivateRoute({ permittedRoles, children }) {
         return  <VerificationProcess/>
     }
 
-    if (user.isLoggedIn) {
+    if (!user.isLoggedIn) {
         return <Navigate to="/login" />;
     }
    

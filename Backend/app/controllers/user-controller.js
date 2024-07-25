@@ -11,11 +11,28 @@ userCltr.register=async(req,res)=>{
         return res.status(400).json({errors:errors.array()})
     }
     const body=req.body
+    const existingUsers=await User.find()
+    let role='customer'
+    let isVerified=false
     try{
+        if (existingUsers.length === 0) {
+            role = 'admin';
+            isVerified = true;
+        } else if (body.role === 'service-provider') {
+            role = 'service-provider';
+        } else if (role === 'customer') {
+            isVerified = true;
+        }
+
         const salt = await bcryptjs.genSalt() 
         const hashPassword = await bcryptjs.hash(body.password, salt) 
-        const user = new User(body)
-        user.password = hashPassword
+        const user = new User({
+            username: body.username,
+            email: body.email,
+            password: hashPassword,
+            role: role,
+            isVerified: isVerified
+        });
         await user.save() 
         res.status(201).json(user)
     }catch(err){
@@ -35,7 +52,9 @@ userCltr.login = async (req, res) => {
         if(user) {
             const isAuth = await bcryptjs.compare(body.password, user.password)
             if(isAuth) {
-              
+                if(user.role === 'service-provider' && !user.isVerified){
+                    return res.status(403).json({errors:'Service-Provider is not verified'})
+                }
                 const tokenData = {
                     id: user._id,
                     role: user.role 
@@ -48,6 +67,44 @@ userCltr.login = async (req, res) => {
         res.status(404).json({ errors: 'invalid email / password'})
     } catch(err) {
         res.status(500).json({ errors: 'something went wrong'})
+    }
+}
+
+userCltr.unverified = async (req, res) => {
+    try {
+        const unverifiedProviders = await User.find({ role: 'service-provider', isVerified: false, isRejected: false });
+        res.json(unverifiedProviders);
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to fetch unverified officers' });
+    }
+}
+
+userCltr.verified = async(req, res) => {
+    try {
+        const { userId } = req.body;
+        await User.findByIdAndUpdate(userId, { isVerified: true });
+        res.json({ message: 'service-provider verified successfully' });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to verify officer' });
+    }
+}
+
+userCltr.reject = async(req, res) => {
+    try {
+        const { userId } = req.body;
+        await User.findByIdAndUpdate(userId, { isRejected: true });
+        res.json({ message: 'service-provider rejected successfully' });
+    } catch (err) {
+        res.status(500).json({ error: 'Failed to reject service-provider' });
+    }
+}
+
+userCltr.verifiedProviders = async(req, res) => {
+    try{
+        const verifiedProviders = await User.find({ role: 'service-provider', isVerified: true })
+        res.json(verifiedProviders)
+    } catch(error) {
+        res.status(500).json({error: 'Failed to fetch verified officers'})
     }
 }
 
@@ -77,6 +134,18 @@ userCltr.update=async (req,res)=>{
 userCltr.account = async (req, res) => {
     try {
         const user = await User.findById(req.user.id)
+        res.json(user)
+    } catch(err) {
+        res.status(500).json({ error: 'something went wrong'})
+    }
+}
+
+userCltr.all = async (req, res) => {
+    try {
+        const user = await User.find()
+        if(!user){
+            return res.status(404).json({error:'No record found'})
+        }
         res.json(user)
     } catch(err) {
         res.status(500).json({ error: 'something went wrong'})

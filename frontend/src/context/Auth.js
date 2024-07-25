@@ -26,7 +26,7 @@ export const AuthProvider = ({ children }) => {
         account:null
     })
    
-    console.log(user.isLoggedIn,user.account)
+    
     return (
         <AuthContext.Provider value={{ user, dispatch}}>
             { children }

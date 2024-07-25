@@ -6,7 +6,15 @@ const userSchema=new Schema({
     password:String,
     role:String,
     resetPasswordToken:String,
-    resetPasswordExpires:String
+    resetPasswordExpires:String,
+    isVerified:{
+        type:Boolean,
+        default:false
+    },
+    isRejected:{
+        type:Boolean,
+        default:false
+    }
     
 
 },{timestamps:true})

@@ -1,4 +1,4 @@
-
+const ServiceProvider =require('../models/serviceProvider-model')
 const serviceValidation={
     servicename:{
         exists:{

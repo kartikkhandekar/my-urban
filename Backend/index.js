@@ -16,38 +16,72 @@ const {customerValidation,customerUpdateValidation}=require('./app/validations/c
 const {bookingValidation,bookingUpdateValidation,bookingUpdateByAdmin,bookingAccepted}=require('./app/validations/booking-validations')
 const reviewValidation=require('./app/validations/review-validatons')
 const {serviceValidation,adminUpdate}=require("./app/validations/service-validation")
+const upload=require('./app/middlewares/multer')
 const express=require('express')
 const cors=require('cors')
+const path=require('path')
 const {checkSchema}=require('express-validator')
 const app=express()
 app.use(express.json())
 app.use(cors())
 configdb()
 
+app.use(express.urlencoded({ extended: false }));
+// Serve static files from the 'uploads' directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
+    // Ensure CORS headers allow the specified origin and credentials
+    setHeaders: (res, path, stat) => {
+      res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
+      res.set('Access-Control-Allow-Credentials', 'true');
+    },
+  }));
+
+
+
+
+app.post('/provider/profile', 
+  authenticateUser, 
+  authorizeUser(['service-provider']), 
+  upload.fields([
+      { name: 'aadhaarPhoto', maxCount: 1 },
+      { name: 'profilePic', maxCount: 1 }
+  ]),  
+  serviceProviderCltr.createProfile
+);
+
+
+
 //User
 app.post('/users/register',checkSchema(userRegisterValidationSchema),userCltr.register)
 app.post('/users/login',checkSchema(userLoginValidationSchema),userCltr.login)
 app.put('/users/update',authenticateUser,checkSchema(userUpdateValidation),userCltr.update)
 app.get('/users/account',authenticateUser,userCltr.account)
+app.get('/users/all',userCltr.all)
 app.get('/users/checkemail',userCltr.checkEmail)
-
 app.post('/users/forgot-password',checkSchema(forgotEmailValidationSchema),userCltr.forgotPassword)
 app.post('/users/reset-password',checkSchema(otpValidationSchema),userCltr.resetPassword)
 
+
 //Customer
-app.post('/customer',authenticateUser,authorizeUser(['customer']),checkSchema(customerValidation),customerCltr.create)
-app.put('/customer/:customerId',authenticateUser,authorizeUser(['customer']),checkSchema(customerUpdateValidation),customerCltr.update)
 app.delete('/customer/:customerId',authenticateUser,authorizeUser(['customer']),customerCltr.delete)
 app.get('/customer/all',customerCltr.allCustomers)
-app.get('/customer/:customerId',authenticateUser,authorizeUser(['admin','customer']),customerCltr.singleCustomer)
+app.get('/customer',authenticateUser,authorizeUser(['customer']),customerCltr.singleCustomer)
+app.post('/customer/profile', authenticateUser, authorizeUser(['customer']), upload.single('profilePic'),checkSchema(customerValidation),customerCltr.createProfile)
+app.put('/customer/profile', authenticateUser, authorizeUser(['customer']),  upload.single('profilePic'),checkSchema(customerUpdateValidation),customerCltr.updateProfile)
 
+app.get('/unverified-providers', authenticateUser, authorizeUser(['admin']), userCltr.unverified)
+app.post('/verify-providers', authenticateUser, authorizeUser(['admin']), userCltr.verified)
+app.post('/reject-providers', authenticateUser, authorizeUser(['admin']), userCltr.reject)
+app.get('/verifiedproviders', authenticateUser, authorizeUser(['admin']), userCltr.verifiedProviders)
 
 //ServiceProvider
-app.post('/provider',authenticateUser,authorizeUser(['service-provider']),checkSchema(serviceProviderValidation),serviceProviderCltr.create)
-app.put('/provider/:serviceId',authenticateUser,authorizeUser(["service-provider"]),checkSchema(serviceProviderUpdateValidation),serviceProviderCltr.update)
+app.post('/provider/profile', authenticateUser, authorizeUser(['service-provider']), upload.fields([{ name: 'aadhaarPhoto', maxCount: 1 },
+{ name: 'profilePic', maxCount: 1 }]),  serviceProviderCltr.createProfile)
+app.put('/provider/profile', authenticateUser, authorizeUser(['service-provider']),  upload.fields([ { name: 'aadhaarPhoto', maxCount: 1 },{ name: 'profilePic', maxCount: 1 }]),serviceProviderCltr.updateProfile)
 app.get('/provider/all',serviceProviderCltr.allProviders)
-app.get('/provider/:id',authenticateUser,authorizeUser(['service-provider','admin']),serviceProviderCltr.singleProvider)
+app.get('/provider',authenticateUser,authorizeUser(['service-provider','admin']),serviceProviderCltr.singleProvider)
 app.delete('/provider/:id',authenticateUser,authorizeUser(['service-provider']),serviceProviderCltr.delete)
+
 
 //Service
 app.post("/service/:serviceProviderId",authenticateUser,authorizeUser(['service-provider']),checkSchema(serviceValidation),serviceCltr.create)
@@ -56,6 +90,7 @@ app.put('/service/:serviceId',authenticateUser,authorizeUser(['admin']),checkSch
 app.get('/service/:serviceId',authenticateUser,authorizeUser(['service-provider','admin']),serviceCltr.single)
 app.get('/service',authenticateUser,serviceCltr.all)
 app.delete('/service/:serviceId',authenticateUser,authorizeUser(['service-provider']),serviceCltr.delete)
+
 
 
 //Booking
@@ -68,6 +103,7 @@ app.put("/booking/provider/:serviceId/booking/:bookingId",authenticateUser,autho
 app.delete('/booking/:bookingId',authenticateUser,authorizeUser(['customer']),bookingCltr.delete)
 
 
+
 //Review
 app.post('/review/provider/:providerId',authenticateUser,authorizeUser(['customer']),checkSchema(reviewValidation),reviewcltr.create)
 app.put('/review/provider/:providerId/review/:reviewId',authenticateUser,authorizeUser(['customer']),checkSchema(reviewValidation),reviewcltr.update)
@@ -75,7 +111,6 @@ app.get('/review/provider/:providerId/review/:reviewId',authenticateUser,authori
 app.get('/review/provider/:providerId',authenticateUser,authorizeUser(['customer','admin']),reviewcltr.particularProvider)
 app.get('/review', reviewcltr.all)
 app.delete('/review/provider/:providerId/review/:reviewId',authenticateUser,authorizeUser(['customer',]),reviewcltr.delete)
-
 
 
 app.listen(process.env.PORT,()=>{

@@ -111,15 +111,7 @@ const serviceProviderUpdateValidation={
         },
         trim:true
     },
-    price :{
-        exists: {
-            errorMessage: 'price is required'
-        },
-        notEmpty: {
-            errorMessage: 'price cannot be blank'
-        },
-        trim:true
-    },phone:{
+   phone:{
         exists: {
             errorMessage: 'phone is required'            
         },
