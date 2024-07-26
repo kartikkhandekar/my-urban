@@ -4,9 +4,11 @@ const serviceProviderValidation={
         custom:{
             options:async function(value,{req}){
                 const serviceProvider=await ServiceProvider.findOne({userId:req.user.id})
+                console.log(serviceProvider)
                 if(serviceProvider){
                     throw new Error('Profile already taken')
                 }else {
+                    console.log(serviceProvider)
                     return true
                 }
             }

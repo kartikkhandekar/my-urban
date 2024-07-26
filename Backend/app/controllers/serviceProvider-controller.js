@@ -6,12 +6,7 @@ const serviceProviderCltr={}
 
 
 serviceProviderCltr.createProfile = async (req, res) => {
-    console.log('Request received at:', new Date());
-    console.log('Request body:', JSON.stringify(req.body, null, 2)); // Log the body as a formatted JSON string
-
-    if (req.files) {
-        console.log('Uploaded files:', JSON.stringify(req.files, null, 2)); // Log the files as a formatted JSON string
-    }
+    
 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
@@ -27,15 +22,15 @@ serviceProviderCltr.createProfile = async (req, res) => {
         if (req.files) {
             if (req.files['aadhaarPhoto']) {
                 provider.aadhaarPhoto = req.files['aadhaarPhoto'][0].path;
-                console.log('Aadhaar Photo URL:', provider.aadhaarPhoto);
+                //console.log('Aadhaar Photo URL:', provider.aadhaarPhoto);
             }
             if (req.files['profilePic']) {
                 provider.profilePic = req.files['profilePic'][0].path;
-                console.log('Profile Pic URL:', provider.profilePic);
+               // console.log('Profile Pic URL:', provider.profilePic);
             }
         }
 
-        console.log('Creating customer with:', JSON.stringify(provider, null, 2));
+       // console.log('Creating customer with:', JSON.stringify(provider, null, 2));
 
         await provider.save();
         res.json(provider);
@@ -71,7 +66,7 @@ serviceProviderCltr.updateProfile = async (req, res) => {
         let provider = await ServiceProvider.findOne({ userId });
 
         if (!provider) {
-            return res.status(400).json({ msg: 'No customer found' });
+            return res.status(400).json({ msg: 'No Provider found' });
         }
 
         // Update customer fields
@@ -98,7 +93,7 @@ serviceProviderCltr.updateProfile = async (req, res) => {
         await provider.save();
         res.json(provider); // Return the updated customer document
     } catch (err) {
-        console.error('Error updating customer:', err.message);
+        console.error('Error updating Provider:', err.message);
         res.status(500).json({ msg: 'Server error' });
     }
 };

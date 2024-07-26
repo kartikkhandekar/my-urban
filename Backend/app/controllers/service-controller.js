@@ -11,9 +11,8 @@ serviceCltr.create=async(req,res)=>{
 
     try{
         const body=req.body
-        const id=req.params.serviceProviderId
         const service=new Service(body)
-        service.serviceProvider=id
+        service.serviceProvider=req.user.id
         await service.save()
         const update = await ServiceProvider.findOneAndUpdate( {userId:req.user.id} , { $push: { service: service._id } }, { new: true });
         if (!update) {
@@ -33,7 +32,7 @@ serviceCltr.update=async(req,res)=>{
     try{
         const body=req.body
         const serviceId=req.params.serviceId
-        const update=await Service.findOneAndUpdate({serviceProviderId:req.user.id,_id:serviceId},body,{new:true})
+        const update=await Service.findOneAndUpdate({serviceProvider:req.user.id,_id:serviceId},body,{new:true})
         if(!update){
             return res.status(404).json({error:'Record Not Found'})
         }

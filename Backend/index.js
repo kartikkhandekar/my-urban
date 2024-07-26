@@ -26,6 +26,7 @@ app.use(express.json())
 app.use(cors())
 configdb()
 
+
 app.use(express.urlencoded({ extended: false }));
 // Serve static files from the 'uploads' directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
@@ -36,18 +37,6 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
     },
   }));
 
-
-
-
-app.post('/provider/profile', 
-  authenticateUser, 
-  authorizeUser(['service-provider']), 
-  upload.fields([
-      { name: 'aadhaarPhoto', maxCount: 1 },
-      { name: 'profilePic', maxCount: 1 }
-  ]),  
-  serviceProviderCltr.createProfile
-);
 
 
 
@@ -76,15 +65,15 @@ app.get('/verifiedproviders', authenticateUser, authorizeUser(['admin']), userCl
 
 //ServiceProvider
 app.post('/provider/profile', authenticateUser, authorizeUser(['service-provider']), upload.fields([{ name: 'aadhaarPhoto', maxCount: 1 },
-{ name: 'profilePic', maxCount: 1 }]),  serviceProviderCltr.createProfile)
-app.put('/provider/profile', authenticateUser, authorizeUser(['service-provider']),  upload.fields([ { name: 'aadhaarPhoto', maxCount: 1 },{ name: 'profilePic', maxCount: 1 }]),serviceProviderCltr.updateProfile)
+{ name: 'profilePic', maxCount: 1 }]),serviceProviderCltr.createProfile)
+app.put('/provider/profile', authenticateUser, authorizeUser(['service-provider']),  upload.fields([ { name: 'aadhaarPhoto', maxCount: 1 },{ name: 'profilePic', maxCount: 1 }]),checkSchema(serviceProviderValidation),serviceProviderCltr.updateProfile)
 app.get('/provider/all',serviceProviderCltr.allProviders)
 app.get('/provider',authenticateUser,authorizeUser(['service-provider','admin']),serviceProviderCltr.singleProvider)
 app.delete('/provider/:id',authenticateUser,authorizeUser(['service-provider']),serviceProviderCltr.delete)
 
 
 //Service
-app.post("/service/:serviceProviderId",authenticateUser,authorizeUser(['service-provider']),checkSchema(serviceValidation),serviceCltr.create)
+app.post("/service",authenticateUser,authorizeUser(['service-provider']),checkSchema(serviceValidation),serviceCltr.create)
 app.put('/service/:serviceId',authenticateUser,authorizeUser(['service-provider']),checkSchema(serviceValidation),serviceCltr.update)
 app.put('/service/:serviceId',authenticateUser,authorizeUser(['admin']),checkSchema(adminUpdate),serviceCltr.updateByAdmin)
 app.get('/service/:serviceId',authenticateUser,authorizeUser(['service-provider','admin']),serviceCltr.single)

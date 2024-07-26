@@ -12,6 +12,7 @@ import ResetPassword from './components/ResetPassword';
 import PrivateRoute from './components/PrivateRoute';
 import Account from './components/Account';
 import Profile from './components/Profile';
+import AllService from './components/AllService';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useAuth } from './context/Auth';
 
@@ -51,6 +52,10 @@ function App() {
         <Route path='/verificationprocess' element={<VerificationProcess/>}/>
         <Route path='/resetpassword' element={<ResetPassword/>}/>
 
+<Route path='/allservice' element={
+          <PrivateRoute permittedRoles={['customer', 'service-provider','admin']}>
+              <AllService />
+          </PrivateRoute>}/>
         <Route path='/account' element={
           <PrivateRoute permittedRoles={['customer', 'service-provider']}>
               <Account />
