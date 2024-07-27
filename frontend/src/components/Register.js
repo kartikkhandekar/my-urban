@@ -4,6 +4,7 @@ import axios from "../config/axios";
 import validator from "validator";
 import { toast } from "react-toastify";
 import 'bootstrap/dist/css/bootstrap.min.css';
+import 'react-toastify/dist/ReactToastify.css';
 
 export default function Register() {
   const [form, setForm] = useState({
@@ -21,9 +22,7 @@ export default function Register() {
   useEffect(() => {
     const fun = async () => {
       const response = await axios.get(`/users/all`);
-      const result = response.data.some((ele) => {
-        return ele.role === "admin";
-      });
+      const result = response.data.some((ele) => ele.role === "admin");
       setCheckAd(result);
     };
     fun();
@@ -31,23 +30,23 @@ export default function Register() {
 
   const runValidations = () => {
     if (form.username.trim().length === 0) {
-      errors.username = "username is required";
+      errors.username = "Username is required";
     }
 
     if (form.email.trim().length === 0) {
-      errors.email = "email is required";
+      errors.email = "Email is required";
     } else if (!validator.isEmail(form.email)) {
-      errors.email = "invalid email format";
+      errors.email = "Invalid email format";
     }
 
     if (form.password.trim().length === 0) {
-      errors.password = "password is required";
+      errors.password = "Password is required";
     } else if (form.password.trim().length < 8 || form.password.trim().length > 128) {
-      errors.password = "password should be between 8 - 128 characters";
+      errors.password = "Password should be between 8 - 128 characters";
     }
 
     if (form.role.trim().length === 0) {
-      errors.role = "role is required";
+      errors.role = "Role is required";
     }
   };
 
@@ -99,8 +98,8 @@ export default function Register() {
   };
 
   return (
-    <div className="container mt-5">
-      <h1 className="text-center mb-4">Register With Us</h1>
+    <div className="container mt-5 p-5 bg-light rounded shadow">
+      <h1 className="text-center mb-4 text-primary">Register With Us</h1>
 
       {form.serverErrors && (
         <div className="alert alert-danger">
@@ -113,7 +112,7 @@ export default function Register() {
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="bg-light p-4 rounded shadow">
+      <form onSubmit={handleSubmit} className="bg-white p-4 rounded shadow-sm">
         <div className="mb-3">
           <label htmlFor="username" className="form-label">Enter Username</label>
           <input
@@ -159,20 +158,18 @@ export default function Register() {
           <label className="form-label">Select Role</label>
           <br />
           {!checkAd && (
-            <>
-              <div className="form-check form-check-inline">
-                <input
-                  type="radio"
-                  value="admin"
-                  onChange={handleChange}
-                  checked={form.role === "admin"}
-                  id="admin"
-                  name="role"
-                  className="form-check-input"
-                />
-                <label htmlFor="admin" className="form-check-label">Admin</label>
-              </div>
-            </>
+            <div className="form-check form-check-inline">
+              <input
+                type="radio"
+                value="admin"
+                onChange={handleChange}
+                checked={form.role === "admin"}
+                id="admin"
+                name="role"
+                className="form-check-input"
+              />
+              <label htmlFor="admin" className="form-check-label">Admin</label>
+            </div>
           )}
           <div className="form-check form-check-inline">
             <input
@@ -201,7 +198,7 @@ export default function Register() {
           {clientErrors.role && <span className="text-danger">{clientErrors.role}</span>}
         </div>
 
-        <button type="submit" className="btn btn-primary">Register</button>
+        <button type="submit" className="btn btn-primary btn-lg w-100">Register</button>
       </form>
     </div>
   );

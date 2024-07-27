@@ -23,29 +23,7 @@ const serviceProviderValidation={
         },
         trim:true
     },
-    category :{
-        exists: {
-            errorMessage: 'category is required'
-        },
-        notEmpty: {
-            errorMessage: 'category cannot be blank'
-        },isIn: {
-            options: [['painting of walls and furniture','AC Repair and service' ,'Electrician,plumber & Carpenter', 'Bathroom and Kitchen cleaning' , 'Salon for kids and men','Salon for women']],
-            errorMessage: 'category should either be a painting of walls and furniture , plumber, AC Repair and service , Electrician,plumber & Carpenter , Bathroom and Kitchen cleaning , Salon for kids and men , Salon for women'
-        },
-        trim:true,
-        custom: {
-            options: function(value) {
-                if(!Array.isArray(value)) {
-                    throw new Error('category should be provided')
-                }
-                if(value.length == 0) {
-                    throw new Error('category consist of atleast one skill')
-                }
-                return true 
-            }
-        }
-    },
+    
     phone:{
         exists: {
             errorMessage: 'phone is required'            

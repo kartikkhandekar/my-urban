@@ -2,6 +2,7 @@ const {Schema,model}=require('mongoose')
 
 const serviceSchema=new Schema({
   servicename:String,
+  category:String,
   description:[String],
   price:Number,
   serviceProvider:{

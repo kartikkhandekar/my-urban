@@ -11,7 +11,7 @@ import VerificationProcess from './components/VerificationProcess';
 import ResetPassword from './components/ResetPassword';
 import PrivateRoute from './components/PrivateRoute';
 import Account from './components/Account';
-import Profile from './components/Profile';
+import Service from './components/Service';
 import AllService from './components/AllService';
 import Icons from './components/Icons';
 import 'bootstrap/dist/css/bootstrap.min.css';
@@ -61,7 +61,9 @@ function App() {
           <PrivateRoute permittedRoles={['customer', 'service-provider']}>
               <Account />
           </PrivateRoute>}/>
-          <Route path='/profile' element={<Profile/>} />
+          <Route path='/service' element={ <PrivateRoute permittedRoles={['service-provider']}>
+              <Service />
+          </PrivateRoute>}/>
        </Routes>
 
     </div>

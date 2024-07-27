@@ -58,7 +58,7 @@ serviceCltr.single=async(req,res)=>{
 
 serviceCltr.all=async(req,res)=>{
     try{
-        const service=await Service.find()
+        const service=await Service.find().populate('serviceProvider')
         if(!service){
             return res.status(404).json({error:'No Records Found'})
         }
@@ -82,24 +82,5 @@ serviceCltr.delete=async(req,res)=>{
 }
 
 
-serviceCltr.updateByAdmin=async(req,res)=>{
-    const errors=validationResult(req)
-    if(!errors.isEmpty()){
-        return res.status(400).json({errors:errors.array()})
-    } 
-    try{
-        const serviceId=req.params.seriveId
-        const body=req.body
-        const response=await Service.findById(serviceId)
-        if(response){
-            response.isVerified=body.isVerified
-            await response.save()
-            return res.json(response)
-        }
-         res.status(404).json({error:'No Records Found'})
-    }catch(err){
-        res.status(500).json({ errors: 'something went wrong'})
 
-    }
-}
 module.exports=serviceCltr
