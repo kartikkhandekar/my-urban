@@ -71,7 +71,6 @@ serviceProviderCltr.updateProfile = async (req, res) => {
 
         // Update customer fields
         provider.serviceProviderName = body.serviceProviderName;
-        provider.category = body.category;
         provider.address = body.address;
         provider.phone = body.phone;
 
