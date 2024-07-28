@@ -75,7 +75,7 @@ app.delete('/provider/:id',authenticateUser,authorizeUser(['service-provider']),
 //Service
 app.post("/service",authenticateUser,authorizeUser(['service-provider']),checkSchema(serviceValidation),serviceCltr.create)
 app.put('/service/:serviceId',authenticateUser,authorizeUser(['service-provider']),checkSchema(serviceValidation),serviceCltr.update)
-app.get('/service/:serviceId',authenticateUser,authorizeUser(['service-provider','admin']),serviceCltr.single)
+app.get('/service/:serviceId',authenticateUser,serviceCltr.single)
 app.get('/service',authenticateUser,serviceCltr.all)
 app.delete('/service/:serviceId',authenticateUser,authorizeUser(['service-provider']),serviceCltr.delete)
 

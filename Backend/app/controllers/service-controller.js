@@ -46,7 +46,7 @@ serviceCltr.update=async(req,res)=>{
 serviceCltr.single=async(req,res)=>{
     try{
         const serviceId=req.params.serviceId
-        const service=await Service.findById(serviceId).populate('serviceProvider')
+        const service=await Service.findById(serviceId)
         if(!service){
             return res.status(404).json({error:"Record Not Found"})
         }

@@ -19,7 +19,7 @@ import { useAuth } from './context/Auth';
 
 function App() {
 
-  const {dispatch}=useAuth()
+  const {dispatch,user}=useAuth()
 
   useEffect(() => {
     if(localStorage.getItem('token'))  {
@@ -41,8 +41,12 @@ function App() {
     <div  >
        <h1>Urban Company</h1>
        <Link to='/'>Home</Link>|
-       <Link to='/register'>Register</Link>|
-       <Link to='/login'>Login</Link>
+       <Link to='/account'> Account</Link>|
+       <Link to='/allservice'>AllService</Link>|
+       <Link to='/login'>Login</Link>|
+       <Link to='/register'>Register</Link>
+
+
      
        <Routes>
         <Route path='/' element={<Home/>}/>
@@ -61,7 +65,7 @@ function App() {
           <PrivateRoute permittedRoles={['customer', 'service-provider']}>
               <Account />
           </PrivateRoute>}/>
-          <Route path='/service' element={ <PrivateRoute permittedRoles={['service-provider']}>
+          <Route path='/service' element={ <PrivateRoute permittedRoles={['service-provider','customer','admin']}>
               <Service />
           </PrivateRoute>}/>
        </Routes>

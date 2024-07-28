@@ -1,9 +1,10 @@
 import { useState, useEffect } from 'react';
 import axios from '../config/axios';
-
+import { startAddItem } from '../actions/cart-actions';
+import { useDispatch } from 'react-redux';
 export default function AllService() {
   const [service, setService] = useState([]);
-
+  const dispatch=useDispatch()
   useEffect(() => {
     const fun = async () => {
       const allService = await axios.get('/service', {
@@ -18,30 +19,31 @@ export default function AllService() {
 
   console.log(service);
 
-  const PackageCard = ({ servicename, price, description, duration }) => {
-    return (
-      <div className="card mb-3">
+ const handleClick=(id)=>{
+   dispatch(startAddItem(id))
+  
+ }
+
+  return (
+    <div className="container mt-5">
+      {service.map((ele) => {
+      return (
+          <div className="card mb-3">
         <div className="card-body">
-          <h5 className="card-title">{servicename}</h5>
-          <h6 className="card-subtitle mb-2 text-muted">₹{price} • {duration}</h6>
+          <h5 className="card-title">{ele.servicename}</h5>
+          <h6 className="card-subtitle mb-2 text-muted">₹{ele.price} • {ele.duration}</h6>
           <ul className="list-unstyled">
-            {description.map((ele, index) => (
+            {ele.description.map((ele, index) => (
               <li key={index}><strong>description:</strong> {ele}</li>
             ))}
           </ul>
           <div className="d-flex justify-content-between align-items-center">
-            <button className="btn btn-primary">Add</button>
+            <button className="btn btn-primary" onClick={()=>{handleClick(ele._id)}}>Add</button>
           </div>
         </div>
       </div>
-    );
-  };
-
-  return (
-    <div className="container mt-5">
-      {service.map((pkg, index) => (
-        <PackageCard key={index} {...pkg} />
-      ))}
+        )
+      })}
     </div>
   );
 }
