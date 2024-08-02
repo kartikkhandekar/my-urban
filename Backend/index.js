@@ -6,6 +6,7 @@ const customerCltr=require('./app/controllers/customer-controller')
 const bookingCltr=require('./app/controllers/booking-controllers')
 const reviewcltr=require('./app/controllers/review-contollers')
 const serviceCltr=require("./app/controllers/service-controller")
+const cartCtrl=require('./app/controllers/cart-controller')
 const authenticateUser=require('./app/middlewares/authentication')
 const authorizeUser=require('./app/middlewares/authorization')
 const {userRegisterValidationSchema,userUpdateValidation}=require('./app/validations/user-register')
@@ -23,9 +24,17 @@ const path=require('path')
 const {checkSchema}=require('express-validator')
 const app=express()
 app.use(express.json())
-app.use(cors())
 configdb()
 
+
+
+
+const corsOptions = {
+  origin: 'http://localhost:3000', // your frontend server URL
+  credentials: true, // Allow credentials (cookies, authorization headers, TLS client certificates)
+};
+
+app.use(cors(corsOptions));
 
 app.use(express.urlencoded({ extended: false }));
 // Serve static files from the 'uploads' directory
@@ -38,7 +47,7 @@ app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
   }));
 
 
-
+  
 
 //User
 app.post('/users/register',checkSchema(userRegisterValidationSchema),userCltr.register)
@@ -78,17 +87,18 @@ app.put('/service/:serviceId',authenticateUser,authorizeUser(['service-provider'
 app.get('/service/:serviceId',authenticateUser,serviceCltr.single)
 app.get('/service',authenticateUser,serviceCltr.all)
 app.delete('/service/:serviceId',authenticateUser,authorizeUser(['service-provider']),serviceCltr.delete)
-
+app.get('/service/category/:category',authenticateUser,serviceCltr.category)
 
 
 //Booking
-app.post('/booking/provider/:serviceId',authenticateUser,authorizeUser(['customer']),checkSchema(bookingValidation),bookingCltr.create)
-app.get('/booking',authenticateUser,authorizeUser(['admin','customer','service-provider']),bookingCltr.allBookings)
-app.get('/booking/:bookingId',authenticateUser,authorizeUser(['admin','customer']),bookingCltr.single)
-app.put('/booking/:bookingId',authenticateUser,authorizeUser(['customer']),checkSchema(bookingUpdateValidation),bookingCltr.update)
+app.post('/booking',authenticateUser,authorizeUser(['customer']),checkSchema(bookingValidation),bookingCltr.createBooking)
+app.get('/booking',authenticateUser,authorizeUser(['admin','customer','service-provider']),bookingCltr.getAllBookingsForCustomer)
+app.get('/booking/:bookingId',authenticateUser,authorizeUser(['admin','customer']),bookingCltr.getBookingById)
 app.put('/booking/admin/:bookingId',authenticateUser,authorizeUser(['admin']),checkSchema(bookingUpdateByAdmin),bookingCltr.updateByAdmin)
-app.put("/booking/provider/:serviceId/booking/:bookingId",authenticateUser,authorizeUser(['service-provider']),checkSchema(bookingAccepted),bookingCltr.accepted)
+app.put("/booking/provider/:bookingId",authenticateUser,authorizeUser(['service-provider']),checkSchema(bookingAccepted),bookingCltr.updateBookingStatus)
 app.delete('/booking/:bookingId',authenticateUser,authorizeUser(['customer']),bookingCltr.delete)
+app.get('/accepted',authenticateUser,authorizeUser(['service-provider']),bookingCltr.AccecptedBooking)
+app.get('/notaccepted',authenticateUser,authorizeUser(['service-provider']),bookingCltr.notAccecptedBooking)
 
 
 
@@ -100,6 +110,13 @@ app.get('/review/provider/:providerId',authenticateUser,authorizeUser(['customer
 app.get('/review', reviewcltr.all)
 app.delete('/review/provider/:providerId/review/:reviewId',authenticateUser,authorizeUser(['customer',]),reviewcltr.delete)
 
+
+//Cart
+app.post ('/cart/:serviceId',authenticateUser,authorizeUser(['customer']),cartCtrl.create)
+app.delete('/cart/:serviceId',authenticateUser,authorizeUser(['customer']),cartCtrl.removeItem)
+app.delete('/cart',authenticateUser,authorizeUser(['customer']),cartCtrl.removeCart)
+app.get('/cart',authenticateUser,authorizeUser(['customer']),cartCtrl.getItems)
+app.put('/cart/:serviceId',authenticateUser,authorizeUser(['customer']),cartCtrl.updateCart)
 
 app.listen(process.env.PORT,()=>{
     console.log('server running on 7777')

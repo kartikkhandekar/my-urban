@@ -4,29 +4,19 @@ import { Navigate } from "react-router-dom";
 
 export default function PrivateRoute({ permittedRoles, children }) {
     const { user } = useAuth();
-    if (!user.account && localStorage.getItem('token')) {
-        return <p>Loading...</p>;
+    
+    if(!user.isLoggedIn && localStorage.getItem('token')) { //By doing this we are not going to login page if we refersh in account page.
+        return <p>loading...</p>
     }
 
-    if (!permittedRoles.includes(user?.account.role)) {
-        return <Navigate to="/unauthorized" />;
+    if(!user.isLoggedIn) { // if user is not logged in then navigating him to login page.
+        return <Navigate to="/login" /> 
     }
 
-    if (!user.account) {
-        // If not logged in, allow access (for public routes)
-        if (permittedRoles.includes(undefined)) {
-          return children;
-        }
-        return <Navigate to="/unauthorized" />;
-      }
-      
-    if (!user?.account.isVerified && user?.account.role==='service-provider') {
-        return  <VerificationProcess/>
+    if(!permittedRoles.includes(user.account.role)) { 
+        return <Navigate to="/unauthorized" />
     }
 
-    if (!user.isLoggedIn) {
-        return <Navigate to="/login" />;
-    }
-   
-    return children;
+    return children
+
 }

@@ -39,8 +39,8 @@ const serviceValidation={
         notEmpty:{
             errorMessage:'Category cannot be empty'
         },isIn: {
-            options: [['painting of walls and furniture','AC Repair and service' ,'Electrician,plumber & Carpenter', 'Bathroom and Kitchen cleaning' , 'Salon for kids and men','Salon for women']],
-            errorMessage: 'category should either be a painting of walls and furniture , plumber, AC Repair and service , Electrician,plumber & Carpenter , Bathroom and Kitchen cleaning , Salon for kids and men , Salon for women'
+            options: [['Painting & Decor','AC Repair and service' ,'Electrician, Plumber & Carpenter', 'Bathroom and Kitchen cleaning' , "Men's Salon & Massage","Women's Salon & Spa"]],
+            errorMessage: "category should either be a Painting & Decor,AC Repair and service ,Electrician, Plumber & Carpenter, Bathroom and Kitchen cleaning , Men's Salon & Massage,Women's Salon & Spa"
         },trim:true
     },
     price:{

@@ -7,7 +7,7 @@ const serviceSchema=new Schema({
   price:Number,
   serviceProvider:{
     type:Schema.Types.ObjectId,
-    ref:'ServiceProvider'
+    ref:'User'
   },
   duration:String
  

@@ -79,18 +79,7 @@ const serviceProviderUpdateValidation={
         },
         trim:true
     },
-    category :{
-        exists: {
-            errorMessage: 'category is required'
-        },
-        notEmpty: {
-            errorMessage: 'category cannot be blank'
-        },isIn: {
-            options: [['painting of walls and furniture','plumber','AC Repair and service,Bathroom and Kitchen cleaning','Salon for kids and men','Salon for women']],
-            errorMessage: 'category should either be a painting of walls and furniture , plumber, AC Repair and service , Bathroom and Kitchen cleaning , Salon for kids and men , Salon for women'
-        },
-        trim:true
-    },
+   
    phone:{
         exists: {
             errorMessage: 'phone is required'            

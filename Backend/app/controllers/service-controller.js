@@ -46,7 +46,7 @@ serviceCltr.update=async(req,res)=>{
 serviceCltr.single=async(req,res)=>{
     try{
         const serviceId=req.params.serviceId
-        const service=await Service.findById(serviceId)
+        const service=await Service.findById(serviceId).populate('serviceProvider',(['username','email']))
         if(!service){
             return res.status(404).json({error:"Record Not Found"})
         }
@@ -58,7 +58,7 @@ serviceCltr.single=async(req,res)=>{
 
 serviceCltr.all=async(req,res)=>{
     try{
-        const service=await Service.find().populate('serviceProvider')
+        const service=await Service.find().populate('serviceProvider',(['username','email']))
         if(!service){
             return res.status(404).json({error:'No Records Found'})
         }
@@ -82,5 +82,18 @@ serviceCltr.delete=async(req,res)=>{
 }
 
 
+serviceCltr.category=async(req,res)=>{
+    try {
+           const category=req.params.category
+        const services = await Service.find({category})
+        if(!services){
+            return res.status(404).json({error:'No Record Found'})
+        }
+        res.status(200).json(services)
+    } catch (error) {
+        console.error(error);
+        throw new Error('Error fetching services by category');
+    }
+}
 
 module.exports=serviceCltr

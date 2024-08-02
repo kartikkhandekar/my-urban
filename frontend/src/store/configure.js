@@ -6,6 +6,7 @@ const configureStore = () => {
     const store = createStore(combineReducers({
         cart:cartReducer
     }),applyMiddleware(thunk))
+    
     return store 
 }
 

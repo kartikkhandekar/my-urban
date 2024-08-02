@@ -20,6 +20,15 @@ const bookingValidation={
         }
     }
  },
+ slot:{
+    exists:{
+        errorMessage:'slot is required'
+    },
+    notEmpty:{
+        errorMessage:'slot cannot be empty'
+    },
+    trim:true,
+ },
  description:{
     exists:{
         errorMessage:'description is required'
@@ -30,6 +39,7 @@ const bookingValidation={
     trim:true,
  }
 }
+
 
 const bookingUpdateValidation={
     date:{
@@ -45,7 +55,7 @@ const bookingUpdateValidation={
         },
         custom:{
             options: function (value){
-              if(new Date() >= new Date(value)){
+              if( new Date() > new Date(value) ){
                  throw new Error('Date should be greater then today or today')
               }else{
                 return true

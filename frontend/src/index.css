@@ -1,3 +1,17 @@
-@tailwind base;
-@tailwind components;
-@tailwind utilities;
+/* src/index.css */
+body {
+    background-color: #f8f9fa;
+  }
+  
+  h1 {
+    margin-bottom: 20px;
+  }
+  
+  .table td, .table th {
+    vertical-align: middle;
+  }
+  
+  .text-right {
+    margin-top: 20px;
+  }
+  

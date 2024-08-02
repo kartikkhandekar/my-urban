@@ -117,7 +117,7 @@ serviceProviderCltr.singleProvider=async (req,res)=>{
 
     try{
        
-        const response =await ServiceProvider.findById(req.user.id).populate('userId',['email'])
+        const response =await ServiceProvider.findOne({userId:req.user.id}).populate('userId',['email'])
         res.status(200).json(response)
 
     }catch(err){

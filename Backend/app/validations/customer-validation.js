@@ -66,7 +66,8 @@ const customerUpdateValidation={
             errorMessage: 'phone cannot be empty'
         },
         trim:true
-    },phone:{
+    },
+    phone:{
         exists: {
             errorMessage: 'phone is required'            
         },
@@ -76,16 +77,6 @@ const customerUpdateValidation={
         isLength: {
             options: {min: 10, max: 10},
             errorMessage: 'phone should be 10 numbers'
-        },
-        custom: {
-            options: async function(value){
-                const user = await Customer.findOne({ phone: value })
-                if(user) {
-                    throw new Error('phone no already taken')
-                } else {
-                    return true 
-                }
-            }
         },
         trim: true 
     },

@@ -1,4 +1,4 @@
-import {Link,Route,Routes} from 'react-router-dom'
+import {Link,Route,Routes,useNavigate} from 'react-router-dom'
 import '../src/index'
 import { useEffect } from 'react';
 import axios from './config/axios';
@@ -13,14 +13,18 @@ import PrivateRoute from './components/PrivateRoute';
 import Account from './components/Account';
 import Service from './components/Service';
 import AllService from './components/AllService';
+import ParticularList from './components/ParticularList';
 import Icons from './components/Icons';
+import CustomerProfile from './components/CustomerProfile';
+import Cart from './components/Cart';
+import Booking from './components/Booking';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useAuth } from './context/Auth';
 
 function App() {
 
   const {dispatch,user}=useAuth()
-
+  const navigate=useNavigate()
   useEffect(() => {
     if(localStorage.getItem('token'))  {
       
@@ -40,12 +44,26 @@ function App() {
   return (
     <div  >
        <h1>Urban Company</h1>
-       <Link to='/'>Home</Link>|
-       <Link to='/account'> Account</Link>|
-       <Link to='/allservice'>AllService</Link>|
-       <Link to='/login'>Login</Link>|
-       <Link to='/register'>Register</Link>
 
+       
+       
+
+       { !user.isLoggedIn ? (
+          <>
+          <Link to="/register">Register</Link>|
+          <Link to="/login"> Login </Link>
+          </>
+        ) : (
+          <>
+             <Link to='/'>Home</Link>|
+            <Link to="/account">Account</Link>|
+            <Link to='/cart'>Cart</Link>
+            <Link to="/" onClick={() => { navigate('/login')
+              localStorage.removeItem('token')
+              dispatch({ type: 'LOGOUT'})
+            }}> logout </Link>  
+          </>
+        )}
 
      
        <Routes>
@@ -68,8 +86,24 @@ function App() {
           <Route path='/service' element={ <PrivateRoute permittedRoles={['service-provider','customer','admin']}>
               <Service />
           </PrivateRoute>}/>
-       </Routes>
+           
+          <Route path='/category/:category' element={ <PrivateRoute permittedRoles={['service-provider','customer','admin']}>
+              <ParticularList />
+          </PrivateRoute>}/>
 
+          <Route path='/customerprofile' element={ <PrivateRoute permittedRoles={['customer','admin']}>
+              <CustomerProfile />
+          </PrivateRoute>}/>
+
+          <Route path='/cart' element={ <PrivateRoute permittedRoles={['customer','admin']}>
+              <Cart />
+          </PrivateRoute>}/>
+         
+          <Route path='/booking' element={ <PrivateRoute permittedRoles={['customer','admin']}>
+              <Booking />
+          </PrivateRoute>}/>
+       </Routes>
+     
     </div>
   );
 }
