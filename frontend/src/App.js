@@ -18,6 +18,7 @@ import Icons from './components/Icons';
 import CustomerProfile from './components/CustomerProfile';
 import Cart from './components/Cart';
 import Booking from './components/Booking';
+import EmptyCart from './components/EmptyCart';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useAuth } from './context/Auth';
 
@@ -75,6 +76,7 @@ function App() {
         <Route path='/verificationprocess' element={<VerificationProcess/>}/>
         <Route path='/resetpassword' element={<ResetPassword/>}/>
         <Route path='/icons' element={<Icons/>}/>
+         <Route path='/emptycart' element={<EmptyCart/>}/>
         <Route path='/allservice' element={
           <PrivateRoute permittedRoles={['customer', 'service-provider','admin']}>
               <AllService />

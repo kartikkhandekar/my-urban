@@ -1,26 +1,37 @@
 const { response } = require('express');
 const Booking=require('../models/booking-model')
 const Service =require('../models/service-model')
+const Cart=require('../models/cart-model')
 const {validationResult}=require('express-validator')
 const bookingCltr={}
 
-bookingCltr.createBooking = async(req,res)=> {
+
+
+bookingCltr.createBooking = async (req, res) => {
     try {
-        const { services,slot, address,date, description } = req.body;
+        const { slot, address, date, description } = req.body;
         const customerId = req.user.id;
 
-        // Validate each service and get the respective service provider
-        const serviceData = await Promise.all(services.map(async (service) => {
-            const serviceDoc = await Service.findById(service.serviceId);
+        // Fetch the cart for the customer and populate the services
+        const cart = await Cart.findOne({ customer: customerId }).populate('services.service', ['servicename', 'price', 'duration']);
+        
+        if (!cart) {
+            throw new Error('Cart not found');
+        }
+
+        // Extract services from the cart and validate each service
+        const serviceData = await Promise.all(cart.services.map(async (cartService) => {
+            const serviceDoc = await Service.findById(cartService.service._id);
             if (!serviceDoc) {
-                throw new Error(`Service with id ${service.serviceId} not found`);
+                throw new Error(`Service with id ${cartService.service._id} not found`);
             }
             return {
-                serviceId: service.serviceId,
+                serviceId: cartService.service._id,
                 serviceProviderId: serviceDoc.serviceProvider
             };
         }));
 
+        // Create a new booking
         const newBooking = new Booking({
             customerId,
             services: serviceData,
@@ -30,12 +41,16 @@ bookingCltr.createBooking = async(req,res)=> {
             address
         });
 
+        // Save the booking and return the response
         const savedBooking = await newBooking.save();
         res.status(201).json(savedBooking);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
-}
+};
+
+
+
 
 
 
