@@ -127,7 +127,7 @@ export const addToCart = (serviceId) => async (dispatch) => {
       payload: response.data,
     });
   } catch (error) {
-    console.error("Add to Cart Error:", error); 
+    alert(error.message); 
     dispatch({
       type: CART_ERROR,
       payload: error.message,

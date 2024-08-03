@@ -1,4 +1,5 @@
 import {Link,Route,Routes,useNavigate} from 'react-router-dom'
+import { Navbar, Nav, Container } from 'react-bootstrap';
 import '../src/index'
 import { useEffect } from 'react';
 import axios from './config/axios';
@@ -45,34 +46,69 @@ function App() {
     }
   }, [])
 
+
+  const handleLogout = () => {
+    localStorage.removeItem('token');
+    dispatch({ type: 'LOGOUT' });
+    navigate('/login');
+  };
   
 
   return (
-    <div  >
-       <h1>Urban Company</h1>
-
+    <div >
        
-       { !user.isLoggedIn ? (
-          <>
-          <Link to="/register">Register</Link>|
-          <Link to="/login"> Login </Link>
-          </>
-        ) : (
-          <>
-             <Link to='/'>Home</Link>|
-            <Link to="/account">Account</Link>|
-            <Link to='/cart'>Cart</Link>
+       <Navbar bg="dark" variant="dark" expand="lg">
+      <Container>
+        <Navbar.Brand href="/">Urban Company</Navbar.Brand>
+        <Navbar.Toggle aria-controls="basic-navbar-nav" />
+        <Navbar.Collapse id="basic-navbar-nav">
+          <Nav className="ml-auto">
+            { !user.isLoggedIn ? (
+              <>
+                <Nav.Link as={Link} to="/register">Register</Nav.Link>
+                <Nav.Link as={Link} to="/login">Login</Nav.Link>
+              </>
+            ) : (
+              <>
+              {  user.account.role ==='customer' && (
+                 <>
+                <Nav.Link as={Link} to="/">Home</Nav.Link>
+                <Nav.Link as={Link} to="/account">Account</Nav.Link>
+                <Nav.Link as={Link} to="/cart">Cart</Nav.Link>
+                
+                <Nav.Link as={Link} to="/" onClick={handleLogout}>Logout</Nav.Link>
+                 </>
+                )}
 
-            <Link to="/" onClick={() => { navigate('/login')
-              localStorage.removeItem('token')
-              dispatch({ type: 'LOGOUT'})
-            }}> logout </Link>  
-          </>
-        )}
+                {
+                  user.account.role === 'service-provider' &&(
+                    <>
+                    <Nav.Link as={Link} to="/">Home</Nav.Link>
+                    <Nav.Link as={Link} to="/account">Account</Nav.Link>
+                    <Nav.Link as={Link} to="/myservices">My Services</Nav.Link>
+                    <Nav.Link as={Link} to="/mybookings">My Bookings</Nav.Link>
+                    <Nav.Link as={Link} to="/" onClick={handleLogout}>Logout</Nav.Link>
+                    </>
+                  )
+                }
+
+                {
+                  user.account.role === 'admin' &&(
+                    <>
+                    <Nav.Link as={Link} to="/">Home</Nav.Link>
+                    <Nav.Link as={Link} to="/account">Account</Nav.Link>
+                    <Nav.Link as={Link} to="/" onClick={handleLogout}>Logout</Nav.Link>
+                    </>
+                  )
+                }
+              </>
+            )}
+          </Nav>
+        </Navbar.Collapse>
+      </Container>
+    </Navbar>
         
-        {/* {
-          user.account.role ==='service-provider' && <Link to='/mybookings'>MyBookings</Link>
-        } */}
+       
      
        <Routes>
         <Route path='/' element={<Home/>}/>

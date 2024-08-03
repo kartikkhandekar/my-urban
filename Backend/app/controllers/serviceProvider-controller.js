@@ -146,7 +146,7 @@ serviceProviderCltr.myBookings = async (req, res) => {
     try {
         const bookings = await Booking.find({ 'services.serviceProviderId': req.user.id })
         .populate('customerId',(['username','email']))
-        .populate('services.serviceId',(['servicename','category','price']))
+        .populate('services.serviceId')
         .populate('services.serviceProviderId',(['username','email']))
 
 
