@@ -179,6 +179,7 @@ export const clearCart = () => async (dispatch) => {
 
 export const updateCart = (serviceId, quantity) => async (dispatch) => {
   try {
+    console.log(serviceId)
     const response = await axios.put(`/cart/${serviceId}`, { quantity:quantity }, {
       headers: {
         Authorization: localStorage.getItem('token'),
@@ -197,7 +198,6 @@ export const updateCart = (serviceId, quantity) => async (dispatch) => {
     });
   }
 };
-
 export const getCartItems = () => async (dispatch) => {
   try {
     const response = await axios.get('/cart', {
@@ -205,13 +205,13 @@ export const getCartItems = () => async (dispatch) => {
         Authorization: localStorage.getItem('token'),
       },
     });
-    console.log("Get Cart Items Response:", response.data); 
+    console.log("Get Cart Items Response:", response.data);
     dispatch({
       type: GET_CART_ITEMS,
       payload: response.data,
     });
   } catch (error) {
-    console.error("Get Cart Items Error:", error.message); 
+    console.error("Get Cart Items Error:", error.message);
     dispatch({
       type: CART_ERROR,
       payload: error.message,

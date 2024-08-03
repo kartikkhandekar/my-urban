@@ -72,6 +72,11 @@ export default function Register() {
         });
         navigate("/login");
       } catch (err) {
+        toast.error('Registration Failed', {
+          autoClose: 1000,
+          position: 'top-center',
+          pauseOnHover: false,
+      });
         setForm({ ...form, serverErrors: err.response.data.errors });
         setClientErrors({});
       }

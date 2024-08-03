@@ -44,6 +44,11 @@ export default function Login() {
                 navigate('/');
             } catch (err) {
                 console.log(err);
+                toast.error('Login Failed', {
+                    autoClose: 1000,
+                    position: 'top-center',
+                    pauseOnHover: false,
+                });
                 setServerError(err.response.data.errors);
             }
         },

@@ -1,10 +1,9 @@
 import React from 'react';
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
-import axios from 'axios';
+import axios from '../config/axios';
 import { Form, FormGroup, Label, Input, Button, FormFeedback, InputGroup, InputGroupText } from 'reactstrap';
-import 'bootstrap/dist/css/bootstrap.min.css';
-
+import {toast} from 'react-toastify'
 export default function Booking() {
     const formik = useFormik({
         initialValues: {
@@ -19,30 +18,45 @@ export default function Booking() {
             address: Yup.string().required('Address is required'),
             description: Yup.string().required('Description is required')
         }),
-        onSubmit: async (values) => {
+        onSubmit: async (values,{ resetForm }) => {
             try {
-                const response = await axios.post('/booking', values);
+                const response = await axios.post('/booking', values,{
+                    headers:{
+                        Authorization:localStorage.getItem('token')
+                    }
+                });
+                toast.success('Booking Done Successfully', {
+                    autoClose: 1000,
+                    position: 'top-center',
+                    pauseOnHover: false,
+                });
                 console.log('Booking created:', response.data);
+                resetForm()
             } catch (error) {
+                toast.error('Booking Failed ', {
+                    autoClose: 1000,
+                    position: 'top-center',
+                    pauseOnHover: false,
+                });
                 console.error('Error creating booking:', error);
             }
         }
     });
 
     const timeSlots = [
-        '9:00 AM', '9:30 AM', '10:00 AM', '10:30 AM', '11:00 AM', '11:30 AM',
-        '12:00 PM', '12:30 PM', '1:00 PM', '1:30 PM', '2:00 PM', '2:30 PM',
-        '3:00 PM', '3:30 PM', '4:00 PM', '4:30 PM', '5:00 PM', '5:30 PM',
+        '9:00 AM', '10:00 AM', '11:00 AM',
+        '12:00 PM',  '1:00 PM',  '2:00 PM', 
+        '3:00 PM',  '4:00 PM',  '5:00 PM', 
         '6:00 PM'
-    ];
+    ]
 
     const handleUseCurrentLocation = () => {
       if (navigator.geolocation) {
           navigator.geolocation.getCurrentPosition(
               (position) => {
-                  const { latitude, longitude } = position.coords;
+                  const { latitude, longitude } = position.coords
                   console.log(latitude,longitude)
-                  const geocodeUrl = `https://api.opencagedata.com/geocode/v1/json?q=${latitude}%2C${longitude}&key=${process.env.GEO_API_KEY}`;
+                  const geocodeUrl = `https://api.opencagedata.com/geocode/v1/json?q=${latitude}%2C${longitude}&key=749aaded409d4a29aeac6bf6ecb9176f`;
                   
                   axios.get(geocodeUrl)
                       .then((response) => {
@@ -65,7 +79,7 @@ export default function Booking() {
 
     return (
         <div className="container mt-5">
-            <h1 className="text-center mb-4">Booking Form</h1>
+            <h1 className="text-center mb-4">Book Your Service</h1>
             <Form onSubmit={formik.handleSubmit}>
                 <FormGroup>
                     <Label for="date">Date</Label>

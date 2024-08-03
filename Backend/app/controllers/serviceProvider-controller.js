@@ -1,4 +1,5 @@
 const ServiceProvider=require('../models/serviceProvider-model')
+const Booking=require('../models/booking-model')
 const {validationResult}=require('express-validator')
 
 const serviceProviderCltr={}
@@ -139,4 +140,25 @@ serviceProviderCltr.delete=async (req,res)=>{
     }
 }
 
-module.exports=serviceProviderCltr
+
+
+serviceProviderCltr.myBookings = async (req, res) => {
+    try {
+        const bookings = await Booking.find({ 'services.serviceProviderId': req.user.id })
+        .populate('customerId',(['username','email']))
+        .populate('services.serviceId',(['servicename','category','price']))
+        .populate('services.serviceProviderId',(['username','email']))
+
+
+
+        if (!bookings || bookings.length === 0) {
+            return res.status(404).json({ errors: 'No Booking' })
+        }
+        res.status(200).json(bookings);
+    } catch (err) {
+        res.status(500).json({ error: 'Something went wrong' })
+    }
+}
+
+
+module.exports = serviceProviderCltr

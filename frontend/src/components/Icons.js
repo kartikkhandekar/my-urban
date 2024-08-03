@@ -19,7 +19,7 @@ export default function Icons() {
     { imageSrc: mens, title: "Men's Salon & Massage" },
     { imageSrc: ac, title: 'AC Repair and service' },
     { imageSrc: cleaning, title: 'Bathroom and Kitchen cleaning' },
-    { imageSrc: drill, title: 'Electrician, Plumber & Carpenter' },
+    { imageSrc: drill, title: 'Electrician,Plumber & Carpenter' },
     { imageSrc: paint, title: 'Painting & Decor' }
   ];
 

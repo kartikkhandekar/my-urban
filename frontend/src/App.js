@@ -19,6 +19,9 @@ import CustomerProfile from './components/CustomerProfile';
 import Cart from './components/Cart';
 import Booking from './components/Booking';
 import EmptyCart from './components/EmptyCart';
+import MyBookings from './components/MyBookings';
+import MyService from './components/MyService';
+import UpdateService from './components/UpdateService';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useAuth } from './context/Auth';
 
@@ -42,13 +45,13 @@ function App() {
     }
   }, [])
 
+  
+
   return (
     <div  >
        <h1>Urban Company</h1>
 
        
-       
-
        { !user.isLoggedIn ? (
           <>
           <Link to="/register">Register</Link>|
@@ -59,13 +62,17 @@ function App() {
              <Link to='/'>Home</Link>|
             <Link to="/account">Account</Link>|
             <Link to='/cart'>Cart</Link>
+
             <Link to="/" onClick={() => { navigate('/login')
               localStorage.removeItem('token')
               dispatch({ type: 'LOGOUT'})
             }}> logout </Link>  
           </>
         )}
-
+        
+        {/* {
+          user.account.role ==='service-provider' && <Link to='/mybookings'>MyBookings</Link>
+        } */}
      
        <Routes>
         <Route path='/' element={<Home/>}/>
@@ -104,8 +111,20 @@ function App() {
           <Route path='/booking' element={ <PrivateRoute permittedRoles={['customer','admin']}>
               <Booking />
           </PrivateRoute>}/>
-       </Routes>
+       
      
+       <Route path='/mybookings' element={ <PrivateRoute permittedRoles={['service-provider']}>
+              <MyBookings />
+          </PrivateRoute>}/>
+      
+          <Route path='/myservices' element={ <PrivateRoute permittedRoles={['service-provider']}>
+              <MyService />
+          </PrivateRoute>}/>
+
+          <Route path='/update/:serviceId' element={ <PrivateRoute permittedRoles={['service-provider']}>
+              <UpdateService />
+          </PrivateRoute>}/>
+      </Routes>
     </div>
   );
 }

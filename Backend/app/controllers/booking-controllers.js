@@ -7,7 +7,113 @@ const bookingCltr={}
 
 
 
+// bookingCltr.createBooking = async (req, res) => {
+//     try {
+//         const { slot, address, date, description } = req.body;
+//         const customerId = req.user.id;
+
+//         // Fetch the cart for the customer and populate the services
+//         const cart = await Cart.findOne({ customer: customerId }).populate('services.service', ['servicename', 'price', 'duration']);
+        
+//         if (!cart) {
+//             throw new Error('Cart not found');
+//         }
+
+//         // Extract services from the cart and validate each service
+//         const serviceData = await Promise.all(cart.services.map(async (cartService) => {
+//             const serviceDoc = await Service.findById(cartService.service._id);
+//             if (!serviceDoc) {
+//                 throw new Error(`Service with id ${cartService.service._id} not found`);
+//             }
+//             return {
+//                 serviceId: cartService.service._id,
+//                 serviceProviderId: serviceDoc.serviceProvider
+//             };
+//         }));
+
+//         // Create a new booking
+//         const newBooking = new Booking({
+//             customerId,
+//             services: serviceData,
+//             date,
+//             description,
+//             slot,
+//             address
+//         });
+
+//         // Save the booking and return the response
+//         const savedBooking = await newBooking.save();
+//         res.status(201).json(savedBooking);
+//     } catch (error) {
+//         res.status(400).json({ error: error.message });
+//     }
+// };
+
+
+// bookingCltr.createBooking = async (req, res) => {
+//     try {
+//         const { slot, address, date, description } = req.body;
+//         const customerId = req.user.id;
+
+//         // Fetch the cart for the customer and populate the services
+//         const cart = await Cart.findOne({ customer: customerId }).populate('services.service', ['servicename', 'price', 'duration']);
+        
+//         if (!cart) {
+//             throw new Error('Cart not found');
+//         }
+
+//         // Extract services from the cart and group them by serviceProviderId
+//         const servicesGroupedByProvider = cart.services.reduce((acc, cartService) => {
+//             const serviceId = cartService.service._id;
+//             const serviceDoc = Service.findById(serviceId);
+            
+//             if (!serviceDoc) {
+//                 throw new Error(`Service with id ${serviceId} not found`);
+//             }
+
+//             const serviceProviderId = serviceDoc.serviceProvider;
+            
+//             if (!acc[serviceProviderId]) {
+//                 acc[serviceProviderId] = [];
+//             }
+//             acc[serviceProviderId].push({
+//                 serviceId,
+//                 serviceProviderId
+//             });
+            
+//             return acc;
+//         }, {});
+
+//         // Create a booking for each service provider
+//         const bookingPromises = Object.values(servicesGroupedByProvider).map(async (services) => {
+//             const newBooking = new Booking({
+//                 customerId,
+//                 services,
+//                 date,
+//                 description,
+//                 slot,
+//                 address
+//             });
+//             return await newBooking.save();
+//         });
+
+//         // Wait for all bookings to be created
+//         const savedBookings = await Promise.all(bookingPromises);
+
+//         // Return the created bookings
+//         res.status(201).json(savedBookings);
+//     } catch (error) {
+//         res.status(400).json({ error: error.message });
+//     }
+// };
+
+
+
 bookingCltr.createBooking = async (req, res) => {
+    const errors=validationResult(req)
+    if(!errors.isEmpty()){
+        return res.status(400).json({errors:errors.array()})
+    }
     try {
         const { slot, address, date, description } = req.body;
         const customerId = req.user.id;
@@ -19,37 +125,40 @@ bookingCltr.createBooking = async (req, res) => {
             throw new Error('Cart not found');
         }
 
-        // Extract services from the cart and validate each service
-        const serviceData = await Promise.all(cart.services.map(async (cartService) => {
+        // Extract services from the cart and create individual bookings
+        const bookingPromises = cart.services.map(async (cartService) => {
             const serviceDoc = await Service.findById(cartService.service._id);
             if (!serviceDoc) {
                 throw new Error(`Service with id ${cartService.service._id} not found`);
             }
-            return {
-                serviceId: cartService.service._id,
-                serviceProviderId: serviceDoc.serviceProvider
-            };
-        }));
+            const serviceProviderId = serviceDoc.serviceProvider;
 
-        // Create a new booking
-        const newBooking = new Booking({
-            customerId,
-            services: serviceData,
-            date,
-            description,
-            slot,
-            address
+            // Create a new booking for each service
+            const newBooking = new Booking({
+                customerId,
+                services: [{
+                    serviceId: cartService.service._id,
+                    serviceProviderId
+                }],
+                date,
+                description,
+                slot,
+                address
+            });
+
+            // Save the booking and return the response
+            return await newBooking.save();
         });
 
-        // Save the booking and return the response
-        const savedBooking = await newBooking.save();
-        res.status(201).json(savedBooking);
+        // Wait for all bookings to be created
+        const savedBookings = await Promise.all(bookingPromises);
+
+        // Return the created bookings
+        res.status(201).json(savedBookings);
     } catch (error) {
         res.status(400).json({ error: error.message });
     }
 };
-
-
 
 
 
@@ -115,16 +224,18 @@ bookingCltr.updateBookingStatus = async (req, res) => {
         const { isAccepted } = req.body;
 
         // Ensure the request is coming from a service provider
-        const booking = await Booking.findById(bookingId).populate('serviceProviderId',(['serviceProvider']))
+        const booking = await Booking.findById(bookingId)
         if (!booking) {
             return res.status(404).json({ message: 'Booking not found' });
         }
          
         // Only the service provider can update isAccepted
+        console.log(req.user.id.toString(),booking.services[0].serviceProviderId.toString())
         
-        if (req.user.id.toString() !== booking.serviceProviderId.serviceProvider.toString()) {
+        if (req.user.id.toString() !== booking.services[0].serviceProviderId.toString()) {
             return res.status(403).json({ message: 'Access denied' });
         }
+
         booking.isAccepted = isAccepted;
         await booking.save();
         res.status(200).json(booking);
@@ -146,6 +257,7 @@ bookingCltr.delete=async(req,res)=>{
         res.status(500).json({error:'somthing wemt wrong'})
     }
 }
+
 
 
 bookingCltr.AccecptedBooking=async(req,res)=>{
@@ -177,4 +289,7 @@ bookingCltr.notAccecptedBooking=async(req,res)=>{
          res.json(500).json({error:'somthing wemt wrong'})
     }
 }
+
+
+
 module.exports=bookingCltr

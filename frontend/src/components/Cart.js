@@ -168,6 +168,101 @@
 // }
 
 
+// import React, { useEffect } from 'react'
+// import { useNavigate } from 'react-router-dom'
+// import { useDispatch, useSelector } from 'react-redux'
+// import { getCartItems, removeFromCart, updateCart, clearCart } from '../actions/cart-actions'
+// import { Container, Row, Col, Button, Table } from 'reactstrap'
+// import EmptyCart from './EmptyCart'
+
+// export default function Cart() {
+//   const dispatch = useDispatch()
+//   const cart = useSelector(state => state.cart.items)
+//   const error = useSelector(state => state.cart.error)
+//   const navigate = useNavigate()
+   
+
+//   useEffect(() => {
+//     dispatch(getCartItems())
+//   }, [dispatch])
+
+//   console.log(cart)
+
+//   const handleRemoveFromCart = (serviceId) => {
+//     dispatch(removeFromCart(serviceId))
+   
+//   }
+
+//   const handleUpdateCart = (serviceId, increment) => {
+//     dispatch(updateCart(serviceId, increment ? 1 : -1))
+   
+//   }
+
+//   const handleClearCart = () => {
+//     dispatch(clearCart())
+//   };
+
+//   const handleBookServices = () => {
+//     navigate('/booking')
+//   };
+
+//   const handleAddServices = () => {
+//     navigate('/')
+//   };
+
+//   if (cart.length === 0) {
+//     return <EmptyCart onAddServices={handleAddServices} />
+//   }
+
+//   return (
+//     <Container>
+//       <Row className="justify-content-center mt-5">
+//         <Col md={8}>
+//           <h1>Cart</h1>
+//           {error && <p className="text-danger">{error}</p>}
+//           <Table striped bordered hover>
+//             <thead>
+//               <tr>
+//                 <th>Service Name</th>
+//                 <th>Quantity</th>
+//                 <th>Actions</th>
+//                 <th>Price</th>
+//               </tr>
+//             </thead>
+//             <tbody>
+//               {cart && cart.services.map(item => 
+//               (  
+//                 <tr key={item._id}>
+//                   <td>{item.servicename}</td>
+//                   <td>{item.quantity}</td>
+//                   <td>
+//                     <Button color="primary" size="sm" onClick={() => handleUpdateCart(item._id, true)}>+</Button>{' '}
+//                     <Button color="warning" size="sm" onClick={() => handleUpdateCart(item._id, false)}>-</Button>{' '}
+//                     <Button color="danger" size="sm" onClick={() => handleRemoveFromCart(item._id)}>Remove</Button>
+//                   </td>
+//                   <td>₹{item.price * item.quantity}</td>
+//                 </tr>
+//               ))}
+//             </tbody>
+//           </Table>
+//           {cart  && cart.services.length > 0 && (
+//             <>
+//               <div className="d-flex justify-content-between align-items-center">
+//                 <h4>Total Price: ₹{cart.totalPrice}</h4>
+//                 <Button color="danger" onClick={handleClearCart}>Clear Cart</Button>
+//               </div>
+//               <Button color="success" className="mt-3" onClick={handleBookServices}>Book Services</Button>
+//             </>
+//           )}
+//         </Col>
+//       </Row>
+//     </Container>
+    
+//   )
+// }
+
+
+
 import React, { useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useDispatch, useSelector } from 'react-redux'
@@ -187,12 +282,11 @@ export default function Cart() {
 
   const handleRemoveFromCart = (serviceId) => {
     dispatch(removeFromCart(serviceId))
-    dispatch(getCartItems())
   }
 
   const handleUpdateCart = (serviceId, increment) => {
     dispatch(updateCart(serviceId, increment ? 1 : -1))
-    dispatch(getCartItems())
+    
   }
 
   const handleClearCart = () => {
@@ -227,24 +321,26 @@ export default function Cart() {
               </tr>
             </thead>
             <tbody>
-              {cart.length > 0 && cart[0].services.map(item => (
-                <tr key={item.service._id}>
-                  <td>{item.service.servicename}</td>
-                  <td>{item.quantity}</td>
-                  <td>
-                    <Button color="primary" size="sm" onClick={() => handleUpdateCart(item.service._id, true)}>+</Button>{' '}
-                    <Button color="warning" size="sm" onClick={() => handleUpdateCart(item.service._id, false)}>-</Button>{' '}
-                    <Button color="danger" size="sm" onClick={() => handleRemoveFromCart(item.service._id)}>Remove</Button>
-                  </td>
-                  <td>₹{item.service.price * item.quantity}</td>
-                </tr>
+              {cart && cart.services.map(item => (
+                item.service && (
+                  <tr key={item._id}>
+                    <td>{item.service.servicename}</td>
+                    <td>{item.quantity}</td>
+                    <td>
+                      <Button color="primary" size="sm" onClick={() => handleUpdateCart(item.service._id, true)}>+</Button>{' '}
+                      <Button color="warning" size="sm" onClick={() => handleUpdateCart(item.service._id, false)}>-</Button>{' '}
+                      <Button color="danger" size="sm" onClick={() => handleRemoveFromCart(item.service._id)}>Remove</Button>
+                    </td>
+                    <td>₹{item.service.price * item.quantity}</td>
+                  </tr>
+                )
               ))}
             </tbody>
           </Table>
-          {cart.length > 0 && cart[0].services.length > 0 && (
+          {cart && cart.services.length > 0 && (
             <>
               <div className="d-flex justify-content-between align-items-center">
-                <h4>Total Price: ₹{cart[0].totalPrice}</h4>
+                <h4>Total Price: ₹{cart.totalPrice}</h4>
                 <Button color="danger" onClick={handleClearCart}>Clear Cart</Button>
               </div>
               <Button color="success" className="mt-3" onClick={handleBookServices}>Book Services</Button>

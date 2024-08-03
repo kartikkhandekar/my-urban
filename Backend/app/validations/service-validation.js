@@ -18,18 +18,7 @@ const serviceValidation={
                 }
              }
         },
-        // custom:{
-        //     options:async function(value,{req}){
-        //        const provider=await ServiceProvider.findById(req.user.id)
-        //        if(provider.category.includes('painting of walls and furniture')){
-        //           if(value == 'AC repair(split/window)' || value == 'Gas leak fix and refill' || value == 'Install and Repair'){
-        //             return true
-        //           }else{
-        //             throw new Error('service should be either one of this [AC repair(split/window),Gas leak fix and refill,Install and Repair]')
-        //           }
-        //        }
-        //     }
-        // },
+       
         trim:true
     },
     category:{
@@ -39,8 +28,67 @@ const serviceValidation={
         notEmpty:{
             errorMessage:'Category cannot be empty'
         },isIn: {
-            options: [['Painting & Decor','AC Repair and service' ,'Electrician, Plumber & Carpenter', 'Bathroom and Kitchen cleaning' , "Men's Salon & Massage","Women's Salon & Spa"]],
-            errorMessage: "category should either be a Painting & Decor,AC Repair and service ,Electrician, Plumber & Carpenter, Bathroom and Kitchen cleaning , Men's Salon & Massage,Women's Salon & Spa"
+            options: [['Painting & Decor','AC Repair and service' ,'Electrician,Plumber & Carpenter', 'Bathroom and Kitchen cleaning' , "Men's Salon & Massage","Women's Salon & Spa"]],
+            errorMessage: "category should either be a Painting & Decor,AC Repair and service ,Electrician,Plumber & Carpenter, Bathroom and Kitchen cleaning , Men's Salon & Massage,Women's Salon & Spa"
+        },trim:true
+    },
+    price:{
+        exists:{
+            errorMessage:'price is required'
+        },
+        notEmpty:{
+            errorMessage:'price cannot be empty'
+        },
+        trim:true,
+        custom:{
+            options: function(value,{req}){
+                 if(value <= 0){
+                      throw new Error('price should more then 0')
+                 }else{
+                    return true
+                 }
+            }
+        }
+    },
+    description:{
+        exists:{
+            errorMessage:'description is required'
+        },
+        notEmpty:{
+            errorMessage:'description cannot be empty'
+        },
+        trim:true
+    },
+    duration:{
+        exists:{
+            errorMessage:'duration is required'
+        },
+        notEmpty:{
+            errorMessage:'duration cannot be empty'
+        }
+    }
+}
+
+const serviceUpdateValidation={
+    servicename:{
+        exists:{
+            errorMessage:'servicename is required'
+        },
+        notEmpty:{
+            errorMessage:'servicename cannot be empty'
+        },
+       
+        trim:true
+    },
+    category:{
+        exists:{
+            errorMessage:'Category is required'
+        },
+        notEmpty:{
+            errorMessage:'Category cannot be empty'
+        },isIn: {
+            options: [['Painting & Decor','AC Repair and service' ,'Electrician,Plumber & Carpenter', 'Bathroom and Kitchen cleaning' , "Men's Salon & Massage","Women's Salon & Spa"]],
+            errorMessage: "category should either be a Painting & Decor,AC Repair and service ,Electrician,Plumber & Carpenter, Bathroom and Kitchen cleaning , Men's Salon & Massage,Women's Salon & Spa"
         },trim:true
     },
     price:{
@@ -92,4 +140,4 @@ const adminUpdate={
     }
 }
 
-module.exports={serviceValidation,adminUpdate}
+module.exports={serviceValidation,serviceUpdateValidation,adminUpdate}

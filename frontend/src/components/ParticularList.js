@@ -85,7 +85,8 @@ export default function ParticularList() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.items);
-
+  
+   
   useEffect(() => {
     const fetchServices = async () => {
       try {
@@ -96,7 +97,7 @@ export default function ParticularList() {
         });
         setService(response.data);
       } catch (error) {
-        console.error("Error fetching services:", error);
+        alert("Error fetching services:", error);
       }
     };
     fetchServices();
@@ -112,7 +113,7 @@ export default function ParticularList() {
   };
 
   const PackageCard = ({ _id, servicename, price, duration, description }) => {
-    const isInCart = cartItems.length > 0 && cartItems[0].services.some((item) => item.service._id === _id);
+  const isInCart = cartItems  && cartItems.services && cartItems.services.some((item) => item.service._id === _id);
 
     return (
       <div className="card mb-3">

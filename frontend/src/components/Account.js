@@ -84,7 +84,7 @@ const Account = () => {
                     <Row className="pt-1">
                       <Col sm="6" className="mb-3">
                         <CardTitle tag="h6">First Name</CardTitle>
-                        <CardText className="text-muted">{profile.name}</CardText>
+                        <CardText className="text-muted">{user.account.username}</CardText>
                       </Col>
                       <Col sm="6" className="mb-3">
                         <CardTitle tag="h6">Email</CardTitle>

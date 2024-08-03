@@ -58,7 +58,7 @@ serviceCltr.single=async(req,res)=>{
 
 serviceCltr.all=async(req,res)=>{
     try{
-        const service=await Service.find().populate('serviceProvider',(['username','email']))
+        const service=await Service.find({serviceProvider:req.user.id}).populate('serviceProvider',(['username','email']))
         if(!service){
             return res.status(404).json({error:'No Records Found'})
         }

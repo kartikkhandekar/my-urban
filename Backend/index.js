@@ -16,7 +16,7 @@ const {serviceProviderValidation,serviceProviderUpdateValidation}=require('./app
 const {customerValidation,customerUpdateValidation}=require('./app/validations/customer-validation')
 const {bookingValidation,bookingUpdateValidation,bookingUpdateByAdmin,bookingAccepted}=require('./app/validations/booking-validations')
 const reviewValidation=require('./app/validations/review-validatons')
-const {serviceValidation,adminUpdate}=require("./app/validations/service-validation")
+const {serviceValidation,serviceUpdateValidation,adminUpdate}=require("./app/validations/service-validation")
 const upload=require('./app/middlewares/multer')
 const express=require('express')
 const cors=require('cors')
@@ -79,11 +79,11 @@ app.put('/provider/profile', authenticateUser, authorizeUser(['service-provider'
 app.get('/provider/all',serviceProviderCltr.allProviders)
 app.get('/provider',authenticateUser,authorizeUser(['service-provider','admin']),serviceProviderCltr.singleProvider)
 app.delete('/provider/:id',authenticateUser,authorizeUser(['service-provider']),serviceProviderCltr.delete)
-
+app.get('/mybookings',authenticateUser,authorizeUser(['service-provider']),serviceProviderCltr.myBookings)
 
 //Service
 app.post("/service",authenticateUser,authorizeUser(['service-provider']),checkSchema(serviceValidation),serviceCltr.create)
-app.put('/service/:serviceId',authenticateUser,authorizeUser(['service-provider']),checkSchema(serviceValidation),serviceCltr.update)
+app.put('/service/:serviceId',authenticateUser,authorizeUser(['service-provider']),checkSchema(serviceUpdateValidation),serviceCltr.update)
 app.get('/service/:serviceId',authenticateUser,serviceCltr.single)
 app.get('/service',authenticateUser,serviceCltr.all)
 app.delete('/service/:serviceId',authenticateUser,authorizeUser(['service-provider']),serviceCltr.delete)
