@@ -110,7 +110,6 @@ import {
 
 const initialState = {
   items: [],
-  totalPrice: 0,
   error: null,
 };
 
@@ -118,25 +117,21 @@ const cartReducer = (state = initialState, action) => {
   switch (action.type) {
       case ADD_TO_CART:
       case REMOVE_FROM_CART:
-      case UPDATE_CART:
+      
       case GET_CART_ITEMS:
-          // Ensure action.payload is an array and has at least one item
           if (Array.isArray(action.payload) && action.payload.length > 0) {
               return {
                   ...state,
-                  items: action.payload[0],
-                  totalPrice: action.payload[0].totalPrice || 0,
+                  items: action.payload[0],                 
                   error: null,
               };
           }
-          // Return current state if payload is invalid
           return state;
 
       case CLEAR_CART:
           return {
               ...state,
               items: [],
-              totalPrice: 0,
               error: null,
           };
 
@@ -145,7 +140,15 @@ const cartReducer = (state = initialState, action) => {
               ...state,
               error: action.payload,
           };
-
+          case UPDATE_CART:{
+            if (Array.isArray(action.payload) && action.payload.length > 0) {
+              return {
+                  ...state,
+                  items: action.payload[0],
+                  error: null,
+              };
+          }
+          }
       default:
           return state;
   }
