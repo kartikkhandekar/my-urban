@@ -56,14 +56,23 @@ const bookingSchema = new Schema({
     },
     address:String,
     payment: {
-        type: String,
+        type: Schema.Types.ObjectId,
+        ref: 'Payment'
+    },
+    paymentStatus:{
+         type: String,
         default: 'pending'
     },
+    amount:Number,
     description: String,
     isAccepted: {
         type: Boolean,
         default: false
-    }
+    },
+    isReview: {
+        type: Boolean,
+        default: false,
+      }
 }, { timestamps: true });
 
 const Booking = model('Booking', bookingSchema);

@@ -6,9 +6,9 @@ const reviewSchema=new Schema({
      type:Schema.Types.ObjectId,
      ref:'User'
   },
-  serviceProviderId:{
+  service:{
      type:Schema.Types.ObjectId,
-     ref:'ServiceProvider'
+     ref:'Service'
   }
 },{timestamps:true})
 

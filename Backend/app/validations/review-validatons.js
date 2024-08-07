@@ -1,17 +1,5 @@
-const Review=require('../models/review-model')
 const reviewValidation={
-    customerId:{
-     custom:{
-        options:async function(value,{req}){
-            const provider=await Review.findOne({customerId:req.user.id})
-            if(provider){
-                throw new Error('You Have Already Shared your Review')
-            }else{
-                return true
-            }
-        }
-     }
-    },
+   
     comment:{
         in:['body'],
         exists:{

@@ -75,6 +75,10 @@ serviceCltr.delete=async(req,res)=>{
         if(!service){
             return res.status(404).json({error:'No Records Found'})
         }
+        const update = await ServiceProvider.findOneAndUpdate( {userId:req.user.id} , { $pull: { service: service._id} }, { new: true });
+        if (!update) {
+            return res.status(404).json({ error: 'provider not found' });
+        }
         res.status(200).json(service)
     }catch(err){
         res.status(500).json({error:'Somthing went wrong'})

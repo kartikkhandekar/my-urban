@@ -6,19 +6,17 @@ const cartSchema = new Schema({
     ref: 'Customer',
     required: true
   },
-  services: [{
-    service: {
+  service: {
       type: Schema.Types.ObjectId,
       ref: 'Service',
       required: true
     },
-    quantity: {
-      type: Number,
-      required: true,
-      default: 1
-    }
-  }],
-  totalPrice: {
+  quantity: {
+    type: Number,
+    required: true,
+    default:1
+  },
+  price: {
     type: Number,
   }
 }, { timestamps: true })

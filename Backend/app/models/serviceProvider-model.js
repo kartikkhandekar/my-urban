@@ -16,10 +16,7 @@ const serviceProviderSchema = new Schema({
         ref: 'Service'
     }],
     phone: Number,
-    review: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Review',
-    }],
+   
     address: String
 }, { timestamps: true });
 

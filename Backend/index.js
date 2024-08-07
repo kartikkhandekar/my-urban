@@ -7,13 +7,14 @@ const bookingCltr=require('./app/controllers/booking-controllers')
 const reviewcltr=require('./app/controllers/review-contollers')
 const serviceCltr=require("./app/controllers/service-controller")
 const cartCtrl=require('./app/controllers/cart-controller')
+const paymentsCtrl=require('./app/controllers/payment-controller')
 const authenticateUser=require('./app/middlewares/authentication')
 const authorizeUser=require('./app/middlewares/authorization')
 const {userRegisterValidationSchema,userUpdateValidation}=require('./app/validations/user-register')
 const userLoginValidationSchema=require('./app/validations/user-login')
 const {otpValidationSchema,forgotEmailValidationSchema}=require('./app/validations/forgetPassword')
 const {serviceProviderValidation,serviceProviderUpdateValidation}=require('./app/validations/serviceProvider-validations')
-const {customerValidation,customerUpdateValidation}=require('./app/validations/customer-validation')
+const {customerValidation,customerUpdateStatusValidation,customerUpdateValidation}=require('./app/validations/customer-validation')
 const {bookingValidation,bookingUpdateValidation,bookingUpdateByAdmin,bookingAccepted}=require('./app/validations/booking-validations')
 const reviewValidation=require('./app/validations/review-validatons')
 const {serviceValidation,serviceUpdateValidation,adminUpdate}=require("./app/validations/service-validation")
@@ -66,7 +67,7 @@ app.get('/customer/all',customerCltr.allCustomers)
 app.get('/customer',authenticateUser,authorizeUser(['customer']),customerCltr.singleCustomer)
 app.post('/customer/profile', authenticateUser, authorizeUser(['customer']), upload.single('profilePic'),checkSchema(customerValidation),customerCltr.createProfile)
 app.put('/customer/profile', authenticateUser, authorizeUser(['customer']),  upload.single('profilePic'),checkSchema(customerUpdateValidation),customerCltr.updateProfile)
-
+app.put('/update-booking-status/:bookingId',authenticateUser,authorizeUser(['customer']),checkSchema(customerUpdateStatusValidation),customerCltr.updateStatus)
 app.get('/unverified-providers', authenticateUser, authorizeUser(['admin']), userCltr.unverified)
 app.post('/verify-providers', authenticateUser, authorizeUser(['admin']), userCltr.verified)
 app.post('/reject-providers', authenticateUser, authorizeUser(['admin']), userCltr.reject)
@@ -99,24 +100,30 @@ app.put("/booking/provider/:bookingId",authenticateUser,authorizeUser(['service-
 app.delete('/booking/:bookingId',authenticateUser,authorizeUser(['customer']),bookingCltr.delete)
 app.get('/accepted',authenticateUser,authorizeUser(['service-provider']),bookingCltr.AccecptedBooking)
 app.get('/notaccepted',authenticateUser,authorizeUser(['service-provider']),bookingCltr.notAccecptedBooking)
-
+app.get("/customer-bookings",authenticateUser,authorizeUser(['customer']),bookingCltr.paticularCustomerBookings)
 
 
 //Review
-app.post('/review/provider/:providerId',authenticateUser,authorizeUser(['customer']),checkSchema(reviewValidation),reviewcltr.create)
-app.put('/review/provider/:providerId/review/:reviewId',authenticateUser,authorizeUser(['customer']),checkSchema(reviewValidation),reviewcltr.update)
-app.get('/review/provider/:providerId/review/:reviewId',authenticateUser,authorizeUser(['customer','admin']),reviewcltr.single)
-app.get('/review/provider/:providerId',authenticateUser,authorizeUser(['customer','admin']),reviewcltr.particularProvider)
+app.post('/review/:bookingId',authenticateUser,authorizeUser(['customer']),checkSchema(reviewValidation),reviewcltr.create)
+// app.put('/review/provider/:providerId/review/:reviewId',authenticateUser,authorizeUser(['customer']),checkSchema(reviewValidation),reviewcltr.update)
+// app.get('/review/provider/:providerId/review/:reviewId',authenticateUser,authorizeUser(['customer','admin']),reviewcltr.single)
+// app.get('/review/provider/:providerId',authenticateUser,authorizeUser(['customer','admin']),reviewcltr.particularProvider)
 app.get('/review', reviewcltr.all)
-app.delete('/review/provider/:providerId/review/:reviewId',authenticateUser,authorizeUser(['customer',]),reviewcltr.delete)
+app.delete('/review/:id',authenticateUser,authorizeUser(['customer',]),reviewcltr.delete)
 
 
 //Cart
 app.post ('/cart/:serviceId',authenticateUser,authorizeUser(['customer']),cartCtrl.create)
-app.delete('/cart/:serviceId',authenticateUser,authorizeUser(['customer']),cartCtrl.removeItem)
-app.delete('/cart',authenticateUser,authorizeUser(['customer']),cartCtrl.removeCart)
-app.get('/cart',authenticateUser,authorizeUser(['customer']),cartCtrl.getItems)
-app.put('/cart/:serviceId',authenticateUser,authorizeUser(['customer']),cartCtrl.updateCart)
+app.delete('/cart/:cartId',authenticateUser,authorizeUser(['customer']),cartCtrl.removeItem)
+app.delete('/cart/service/:serviceId',authenticateUser,authorizeUser(['customer']),cartCtrl.removeService)
+app.delete('/cart',authenticateUser,authorizeUser(['customer']),cartCtrl.clearCart)
+app.get('/all',authenticateUser,authorizeUser(['customer']),cartCtrl.allItems)
+
+
+//Payment
+app.post('/payment/:bookingId',authenticateUser,paymentsCtrl.pay)
+app.put('/payment-success/:id',paymentsCtrl.successUpdate)
+app.put('/payment-cancel/:id',paymentsCtrl.failerUpdate)
 
 app.listen(process.env.PORT,()=>{
     console.log('server running on 7777')

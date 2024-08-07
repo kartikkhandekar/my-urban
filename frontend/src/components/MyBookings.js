@@ -11,7 +11,7 @@ const MyBookings = () => {
         fetchBookings();
     }, []);
    
-    console.log(bookings)
+    
     const fetchBookings = async () => {
         try {
             const response = await axios.get('/mybookings', {
@@ -38,6 +38,14 @@ const MyBookings = () => {
            alert(`Error ${isAccepted ? 'accepting' : 'rejecting'} booking:`, error);
         }
     };
+const handleBooking=(book)=>{
+    
+    if(book.amount === book.services[0].serviceId.price){
+        return 1
+    }else{
+       return  (book.amount / book.services[0].serviceId.price)
+    }
+}
 
     return (
         <>
@@ -47,30 +55,32 @@ const MyBookings = () => {
              <Table striped>
                  <thead>
                      <tr>
-                         <th>Customer Name</th>
-                         <th>Customer Email</th>
-                         <th>Service Name</th>
-                         <th>Category</th>
-                         <th>Price</th>
-                         <th>Date</th>
-                         <th>Slot</th>
-                         <th>Status</th>
-                         <th>Actions</th>
+                         <th className="text-center" >Customer Name</th>
+                         <th className="text-center" >Customer Email</th>
+                         <th className="text-center">Service Name</th>
+                         <th className="text-center">Category</th>
+                         <th className="text-center">Price</th>
+                         <th className="text-center">Date</th>
+                         <th className="text-center">Slot</th>
+                         <th className="text-center">Status</th>
+                         <th className="text-center">Booking</th>
+                         <th className="text-center">Actions</th>
                      </tr>
                  </thead>
                  <tbody>
                      {bookings.map((booking) => (
                          booking.services.map((service, index) => (
                              <tr key={`${booking._id}-${index}`}>
-                                 <td>{booking.customerId.username}</td>
-                                 <td>{booking.customerId.email}</td>
-                                 <td>{service.serviceId.servicename}</td>
-                                 <td>{service.serviceId.category}</td>
-                                 <td>{service.serviceId.price}</td>
-                                 <td>{new Date(booking.date).toLocaleDateString()}</td>
-                                 <td>{booking.slot}</td>
-                                 <td>{booking.isAccepted ? 'Accepted' : 'Pending'}</td>
-                                 <td>
+                                 <td className="text-center">{booking.customerId.username}</td>
+                                 <td className="text-center">{booking.customerId.email}</td>
+                                 <td className="text-center">{service.serviceId.servicename}</td>
+                                 <td className="text-center">{service.serviceId.category}</td>
+                                 <td className="text-center">{booking.amount}</td>
+                                 <td className="text-center">{new Date(booking.date).toLocaleDateString()}</td>
+                                 <td className="text-center">{booking.slot}</td>
+                                 <td className="text-center">{booking.isAccepted ? 'Accepted' : 'Pending'}</td>
+                                 <td className="text-center">{handleBooking(booking)}</td>
+                                 <td className="text-center">
                                      <Button color="success" onClick={() => updateBookingStatus(booking._id, true)} disabled={booking.isAccepted}>Accept</Button>{' '}
                                      <Button color="danger" onClick={() => updateBookingStatus(booking._id, false)} disabled={!booking.isAccepted && service.isAccepted !== false}>Reject</Button>
                                  </td>

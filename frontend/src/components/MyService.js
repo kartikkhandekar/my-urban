@@ -3,7 +3,7 @@ import axios from '../config/axios';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
-const MyService = () => {
+export default function MyService(){
     const [services, setServices] = useState([]);
     const navigate=useNavigate()
     useEffect(() => {
@@ -52,23 +52,23 @@ const MyService = () => {
             <table className="table table-bordered">
                 <thead>
                     <tr>
-                        <th>Service Name</th>
-                        <th>Service Provider</th>
-                        <th>Email</th>
-                        <th>Category</th>
-                        <th>Price</th>
-                        <th>Actions</th>
+                        <th className="text-center" >Service Name</th>
+                        <th className="text-center" >Service Provider</th>
+                        <th className="text-center" >Email</th>
+                        <th className="text-center" >Category</th>
+                        <th className="text-center" >Price</th>
+                        <th className="text-center" >Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                     {services.map(service => (
                         <tr key={service._id}>
-                            <td>{service.servicename}</td>
-                            <td>{service.serviceProvider.username}</td>
-                            <td>{service.serviceProvider.email}</td>
-                            <td>{service.category}</td>
-                            <td>{service.price}</td>
-                            <td>
+                            <td className="text-center" >{service.servicename}</td>
+                            <td className="text-center" >{service.serviceProvider.username}</td>
+                            <td className="text-center" >{service.serviceProvider.email}</td>
+                            <td className="text-center" >{service.category}</td>
+                            <td className="text-center" >{service.price}</td>
+                            <td className="text-center" >
                                 <button className="btn btn-warning mr-2" onClick={() => handleUpdate(service._id)}>Update</button>
                                 <button className="btn btn-danger" onClick={() => handleDelete(service._id)}>Delete</button>
                             </td>
@@ -80,4 +80,4 @@ const MyService = () => {
     );
 };
 
-export default MyService;
+

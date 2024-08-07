@@ -76,7 +76,7 @@
 import { useState, useEffect } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "../config/axios";
-import { addToCart, getCartItems } from '../actions/cart-actions';
+import { fetchAllCartItems,addCartItem  } from '../actions/cart-actions';
 import { useDispatch, useSelector } from 'react-redux';
 
 export default function ParticularList() {
@@ -86,7 +86,7 @@ export default function ParticularList() {
   const dispatch = useDispatch();
   const cartItems = useSelector((state) => state.cart.items);
   
-   
+  console.log(cartItems)
   useEffect(() => {
     const fetchServices = async () => {
       try {
@@ -104,16 +104,17 @@ export default function ParticularList() {
   }, [category]);
 
   useEffect(() => {
-    dispatch(getCartItems());
+    dispatch(fetchAllCartItems());
   }, [dispatch]);
 
+
   const handleAddClick = async (id) => {
-    await dispatch(addToCart(id));
-    dispatch(getCartItems()); // Fetch updated cart items
+    dispatch(addCartItem(id));
   };
 
   const PackageCard = ({ _id, servicename, price, duration, description }) => {
-  const isInCart = cartItems  && cartItems.services && cartItems.services.some((item) => item.service._id === _id);
+  const isInCart = cartItems  && cartItems.some(ele=> ele.service._id === _id)
+  console.log(isInCart)
 
     return (
       <div className="card mb-3">

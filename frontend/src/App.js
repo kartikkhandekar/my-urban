@@ -23,6 +23,10 @@ import EmptyCart from './components/EmptyCart';
 import MyBookings from './components/MyBookings';
 import MyService from './components/MyService';
 import UpdateService from './components/UpdateService';
+import CustomerBookings from './components/CustomerBookings';
+import Success from './components/Success';
+import Cancel from './components/Cancel';
+
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { useAuth } from './context/Auth';
 
@@ -75,7 +79,7 @@ function App() {
                 <Nav.Link as={Link} to="/">Home</Nav.Link>
                 <Nav.Link as={Link} to="/account">Account</Nav.Link>
                 <Nav.Link as={Link} to="/cart">Cart</Nav.Link>
-                
+                <Nav.Link as={Link} to="/customer-bookings">My Bookings</Nav.Link>
                 <Nav.Link as={Link} to="/" onClick={handleLogout}>Logout</Nav.Link>
                  </>
                 )}
@@ -160,6 +164,15 @@ function App() {
           <Route path='/update/:serviceId' element={ <PrivateRoute permittedRoles={['service-provider']}>
               <UpdateService />
           </PrivateRoute>}/>
+
+          <Route path='/customer-bookings' element={ <PrivateRoute permittedRoles={['customer']}>
+              <CustomerBookings />
+          </PrivateRoute>}/>
+          
+          <Route path='/success' element={<Success/>}/>
+          <Route path='/cancel' element={<Cancel/>}/>
+
+
       </Routes>
     </div>
   );

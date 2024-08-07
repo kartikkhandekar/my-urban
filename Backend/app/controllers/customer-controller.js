@@ -1,5 +1,6 @@
 const Customer=require('../models/customer-model')
-const {validationResult}=require('express-validator')
+const Booking=require("../models/booking-model")
+const {validationResult}=require('express-validator');
 const customerCltr={}
 
 customerCltr.createProfile = async (req, res) => {
@@ -101,5 +102,43 @@ customerCltr.singleCustomer=async(req,res)=>{
 
     }
  }
+
+
+
+ customerCltr.updateStatus = async (req, res) => {
+  const errors=validationResult(req)
+  if(!errors.isEmpty()){
+      return res.status(400).json({errors:errors.array()})
+  }
+  try {
+      const { bookingId } = req.params;
+      const { status } = req.body;
+
+      // Ensure the request is coming from a service provider
+      const booking = await Booking.findById({_id:bookingId,customerId:req.user.id})
+      if (!booking) {
+          return res.status(404).json({ message: 'Booking not found' });
+      }
+       
+      // Only the service provider can update isAccepted
+
+      console.log(req.user.id.toString(),booking.customerId.toString())
+      
+      if (req.user.id.toString() !== booking.customerId.toString()) {
+          return res.status(403).json({ message: 'Access denied' });
+      }
+
+      if(booking.isAccepted === false){
+           return res.status(400).json({errors:'Still Service-Provider Not accepted Your Service'})
+      }
+
+      booking.status = status
+      await booking.save()
+      res.status(200).json(booking)
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Server error' });
+  }
+};
 
 module.exports=customerCltr

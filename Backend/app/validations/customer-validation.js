@@ -91,4 +91,22 @@ const customerUpdateValidation={
     }
    
 }
-module.exports={customerValidation,customerUpdateValidation}
+
+
+customerUpdateStatusValidation={
+    status:{
+        exists: {
+            errorMessage: 'status is required'            
+        },
+        notEmpty: {
+            errorMessage: 'status cannot be empty'
+        },
+        isIn:{
+             options:[['pending','completed']],
+             errorMessage:'status should be pending or completed'
+
+        },
+        trim:true
+    }
+}
+module.exports={customerValidation,customerUpdateStatusValidation,customerUpdateValidation}
