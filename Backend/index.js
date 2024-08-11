@@ -107,8 +107,8 @@ app.get("/customer-bookings",authenticateUser,authorizeUser(['customer']),bookin
 app.post('/review/:bookingId',authenticateUser,authorizeUser(['customer']),checkSchema(reviewValidation),reviewcltr.create)
 // app.put('/review/provider/:providerId/review/:reviewId',authenticateUser,authorizeUser(['customer']),checkSchema(reviewValidation),reviewcltr.update)
 // app.get('/review/provider/:providerId/review/:reviewId',authenticateUser,authorizeUser(['customer','admin']),reviewcltr.single)
-// app.get('/review/provider/:providerId',authenticateUser,authorizeUser(['customer','admin']),reviewcltr.particularProvider)
-app.get('/review', reviewcltr.all)
+app.get('/review/:serviceId',authenticateUser,reviewcltr.particular)
+app.get('/review',authenticateUser, reviewcltr.all)
 app.delete('/review/:id',authenticateUser,authorizeUser(['customer',]),reviewcltr.delete)
 
 

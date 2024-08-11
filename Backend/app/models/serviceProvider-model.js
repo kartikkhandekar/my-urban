@@ -11,12 +11,7 @@ const serviceProviderSchema = new Schema({
     profilePic: String,
     aadhaarPhoto: String,
     serviceProviderName: String,
-    service: [{
-        type: Schema.Types.ObjectId,
-        ref: 'Service'
-    }],
     phone: Number,
-   
     address: String
 }, { timestamps: true });
 

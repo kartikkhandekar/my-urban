@@ -28,19 +28,19 @@ export default function ServiceForm() {
   const handleSubmit = async (values, { setSubmitting }) => {
     try {
       await axios.post('/service', values,{
-        headers:{
-            Authorization:localStorage.getItem('token')
-        }
+        headers: {
+          Authorization: localStorage.getItem('token')
+        },
       });
       toast.success('Service Added Success', {
         autoClose: 1000,
         position: 'top-center',
         pauseOnHover: false,
     });
-    navigate('/');
+    navigate('/myservices');
     } catch (error) {
         setServerError(error.response.data.errors);
-        console.log(serverError)
+       
     } finally {
       setSubmitting(false);
     }

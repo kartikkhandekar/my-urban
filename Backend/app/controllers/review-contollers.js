@@ -5,58 +5,56 @@ const { validationResult } = require('express-validator')
 const Customer = require('../models/customer-model')
 const reviewcltr={}
 
-reviewcltr.create = async (req, res) => {
-  const errors = validationResult(req);
-  if (!errors.isEmpty()) {
-    return res.status(400).json({ errors: errors.array() });
-  }
-  const bookingId=req.params.bookingId  
-  const body=req.body
-  try {
-    const  book =await Booking.findById(bookingId)
-    const serviceId=book.services[0].serviceId
-    const review = new Review(body);
 
-    review.service = serviceId
-    review.customerId = req.user.id;
-    review.comment=body.comment
-    review.rating=body.rating
-    const noOfReviews = await Review.countDocuments({ service: serviceId });
-    const service = await Service.findById(serviceId);
+
+reviewcltr.create = async (req, res) => {
+  const errors = validationResult(req)
+  if (!errors.isEmpty()) {
+    return res.status(400).json({ errors: errors.array() })
+  } 
+
+  const bookingId = req.params.bookingId
+  const { comment, rating } = req.body
+
+  try {
+    const booking = await Booking.findById(bookingId)
+    if (!booking) {
+      return res.status(404).json({ error: "Booking not found" })
+    }
+
+    const serviceId = booking.services[0].serviceId
+    const review = new Review({
+      service: serviceId,
+      customerId: req.user.id,
+      comment,
+      rating
+    });
+
+    const noOfReviews = await Review.countDocuments({ service: serviceId })
+    const service = await Service.findById(serviceId)
+    if (!service) {
+      return res.status(404).json({ error: "Service not found" })
+    }
+
     const prevRating = service.rating;
-    const newRating =
-      (prevRating * noOfReviews + body.rating) / (noOfReviews + 1);
+    const newRating = (prevRating * noOfReviews + rating) / (noOfReviews + 1)
     service.rating = newRating;
+
     await service.save()
     await review.save()
-    const booking = await Booking.findOneAndUpdate(
-      { bookingId: bookingId },
-      { $set: { isReview: true} },
-      { new: true }
-    );
+
+    booking.isReview = true
     await booking.save()
-    res.status(201).json(review);
+
+    res.status(201).json(review)
   } catch (err) {
     console.log(err);
-    res.status(500).json({ error: "internal server error" });
+    res.status(500).json({ error: "Internal server error" })
   }
-};
+}
 
-//  reviewcltr.update=async(req,res)=>{
-//     try{
-//        const review=req.params.reviewId
-//        const serviceProviderId=req.params.providerId
-//        const body=req.body
-//        const update=await Review.findByIdAndUpdate({customerId:req.user.id,_id:review,serviceProviderId:serviceProviderId},body,{new:true})
-//        if(!update){
-//          return res.status(400).json({error:'Record not Found'})
-//        }
-//        res.status(200).json(update)
-       
-//     }catch(err){
-//       res.status(500).json({error:'Somthing went wrong'})
-//     }
-//  }
+
+
 
 //  reviewcltr.single=async(req,res)=>{
 //    try{
@@ -74,23 +72,23 @@ reviewcltr.create = async (req, res) => {
 //  }
 
  
-//  reviewcltr.particularProvider=async(req,res)=>{
-//    try{
-//      const providerId=req.params.providerId
-//      const review=await Review.find({serviceProviderId:providerId})
-//      if(!review){
-//       return res.status(400).json({error:"Record Not Found"})
-//      }
-//      res.status(200).json(review)
-//    }catch(err){
-//       res.status(500).json({error:'Somthing went wrong'})
+ reviewcltr.particular=async(req,res)=>{
+   try{
+    const serviceId=req.params.serviceId
+     const review=await Review.find({service:serviceId}).populate('customerId').populate('service')
+     if(!review){
+      return res.status(400).json({error:"Record Not Found"})
+     }
+     res.status(200).json(review)
+   }catch(err){
+      res.status(500).json({error:'Somthing went wrong'})
 
-//    }
-//  }
+   }
+ }
 
  reviewcltr.all=async(req,res)=>{
    try{
-     const review=await Review.find()
+     const review=await Review.find().populate('customerId').populate('service')
      if(!review){
       return res.status(400).json({error:"Record Not Found"})
      }

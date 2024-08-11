@@ -4,11 +4,11 @@ import { useNavigate } from 'react-router-dom';
 import { toast } from 'react-toastify';
 
 export default function MyService(){
-    const [services, setServices] = useState([]);
+    const [services, setServices] = useState([])
     const navigate=useNavigate()
     useEffect(() => {
-        fetchServices();
-    }, []);
+        fetchServices()
+    }, [])
 
     const fetchServices = async () => {
         try {
@@ -16,24 +16,25 @@ export default function MyService(){
                 headers:{
                     Authorization:localStorage.getItem('token')
                 }
-            });
+            })
             setServices(response.data);
         } catch (error) {
-            toast.error('Error fetching services');
+            toast.error('Error fetching services')
         }
     };
 
     const handleDelete = async (serviceId) => {
         try {
             await axios.delete(`/service/${serviceId}`,{
-                headers:{
-                    Authorization:localStorage.getItem('token')
-                }
-            });
-            setServices(services.filter(service => service._id !== serviceId));
-            toast.success('Service deleted successfully');
+                headers: {
+                    Authorization: localStorage.getItem('token')
+                  },
+            })
+            setServices(services.filter(service => service._id !== serviceId))
+            toast.success('Service deleted successfully')
         } catch (error) {
-            toast.error('Error deleting service');
+            console.log(error)
+            toast.error('Error deleting service')
         }
     };
 
@@ -77,7 +78,7 @@ export default function MyService(){
                 </tbody>
             </table>
         </div>
-    );
-};
+    )
+}
 
 

@@ -10,15 +10,15 @@ const bookingValidation={
     isDate:{
         errorMessage:' date is invaild'
     },
-    custom:{
-        options: function (value){
-          if(new Date(value) <= new Date()){
-             throw new Error('Date should be greater then today or today')
-          }else{
-            return true
-          }
-        }
-    }
+    // custom:{
+    //     options: function (value){
+    //       if(new Date(value) <= new Date()){
+    //          throw new Error('Date should be greater then today or today')
+    //       }else{
+    //         return true
+    //       }
+    //     }
+    // }
  },
  slot:{
     exists:{

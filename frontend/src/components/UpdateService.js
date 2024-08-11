@@ -57,7 +57,7 @@ export default function UpdateService() {
     try {
       await axios.put(`/service/${serviceId}`, values, {
         headers: {
-          Authorization: localStorage.getItem('token'),
+          Authorization: localStorage.getItem('token')
         },
       });
       toast.success('Service updated successfully', {
