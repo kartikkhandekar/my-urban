@@ -1,0 +1,52 @@
+/* Container styling */
+.container {
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+/* Table styling */
+.table {
+    margin-top: 20px;
+    border: 1px solid #dee2e6;
+}
+
+.table th, .table td {
+    text-align: center;
+    padding: 12px;
+}
+
+.table thead {
+    background-color: #f8f9fa;
+}
+
+.table-striped tbody tr:nth-of-type(odd) {
+    background-color: #f9f9f9;
+}
+
+/* Form controls styling */
+.form-group {
+    margin-bottom: 20px;
+}
+
+.label {
+    font-weight: bold;
+}
+
+.input {
+    border-radius: 4px;
+}
+
+/* Pagination controls styling */
+.row {
+    margin-top: 20px;
+}
+
+.button {
+    margin: 0 5px;
+}
+
+.button:disabled {
+    background-color: #e9ecef;
+    border: 1px solid #dee2e6;
+    cursor: not-allowed;
+}

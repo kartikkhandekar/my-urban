@@ -30,8 +30,8 @@
 // module.exports=Booking
 
 
-const mongoose = require('mongoose');
-const { Schema, model } = mongoose;
+const mongoose = require('mongoose')
+const { Schema, model } = mongoose
 
 const bookingSchema = new Schema({
     customerId: {
@@ -73,8 +73,8 @@ const bookingSchema = new Schema({
         type: Boolean,
         default: false,
       }
-}, { timestamps: true });
+}, { timestamps: true })
 
-const Booking = model('Booking', bookingSchema);
+const Booking = model('Booking', bookingSchema)
 
-module.exports = Booking;
+module.exports = Booking

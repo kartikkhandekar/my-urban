@@ -102,13 +102,19 @@ paymentsCntrl.failerUpdate=async(req,res)=>{
         res.status(500).json({error:"internal server errror"})
     }
 }
+
+
 paymentsCntrl.list=async(req,res)=>{
     try{
-     const response=await Payment.find({customer:req.user.id}).sort({createdAt:-1})
+     const response=await Payment.find()
+                  .populate('customerId',(['username','email']))
+                  .populate('bookingId',(['slot','price','date','isAccepted']))
      res.json(response)
     }catch(err){
         console.log(err)
         res.status(501).json({error:"internal server error"})
     }
 }
+
+
 module.exports=paymentsCntrl

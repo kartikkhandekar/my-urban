@@ -12,7 +12,7 @@ export default function ReviewsModal({ isOpen, toggle, reviews }){
           <ul>
             {reviews.map((review, index) => (
               <li key={index}>
-                <p><strong>{review.username}</strong> ({review.rating} stars):</p>
+                <p><strong>{review.username}</strong> {review.rating} stars</p>
                 <p>{review.comment}</p>
               </li>
             ))}

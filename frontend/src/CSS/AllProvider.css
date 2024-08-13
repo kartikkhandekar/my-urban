@@ -1,0 +1,21 @@
+.table-responsive {
+    max-width: 800px;
+    margin: auto;
+}
+
+.table thead {
+    background-color: #343a40;
+    color: #ffffff;
+}
+
+.table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+button {
+    min-width: 80px;
+}
+
+button[disabled] {
+    opacity: 0.5;
+}

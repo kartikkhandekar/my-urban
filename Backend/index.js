@@ -60,6 +60,10 @@ app.get('/users/checkemail',userCltr.checkEmail)
 app.post('/users/forgot-password',checkSchema(forgotEmailValidationSchema),userCltr.forgotPassword)
 app.post('/users/reset-password',checkSchema(otpValidationSchema),userCltr.resetPassword)
 
+app.get('/unverified-providers', authenticateUser, authorizeUser(['admin']), userCltr.unverified)
+app.post('/verify-providers', authenticateUser, authorizeUser(['admin']), userCltr.verified)
+app.post('/reject-providers', authenticateUser, authorizeUser(['admin']), userCltr.reject)
+app.get('/verifiedproviders', authenticateUser, authorizeUser(['admin']), userCltr.verifiedProviders)
 
 //Customer
 app.delete('/customer/:customerId',authenticateUser,authorizeUser(['customer']),customerCltr.delete)
@@ -68,10 +72,7 @@ app.get('/customer',authenticateUser,authorizeUser(['customer']),customerCltr.si
 app.post('/customer/profile', authenticateUser, authorizeUser(['customer']), upload.single('profilePic'),checkSchema(customerValidation),customerCltr.createProfile)
 app.put('/customer/profile', authenticateUser, authorizeUser(['customer']),  upload.single('profilePic'),checkSchema(customerUpdateValidation),customerCltr.updateProfile)
 app.put('/update-booking-status/:bookingId',authenticateUser,authorizeUser(['customer']),checkSchema(customerUpdateStatusValidation),customerCltr.updateStatus)
-app.get('/unverified-providers', authenticateUser, authorizeUser(['admin']), userCltr.unverified)
-app.post('/verify-providers', authenticateUser, authorizeUser(['admin']), userCltr.verified)
-app.post('/reject-providers', authenticateUser, authorizeUser(['admin']), userCltr.reject)
-app.get('/verifiedproviders', authenticateUser, authorizeUser(['admin']), userCltr.verifiedProviders)
+
 
 //ServiceProvider
 app.post('/provider/profile', authenticateUser, authorizeUser(['service-provider']), upload.fields([{ name: 'aadhaarPhoto', maxCount: 1 },
@@ -93,7 +94,7 @@ app.get('/service/category/:category',authenticateUser,serviceCltr.category)
 
 //Booking
 app.post('/booking',authenticateUser,authorizeUser(['customer']),checkSchema(bookingValidation),bookingCltr.createBooking)
-app.get('/booking',authenticateUser,authorizeUser(['admin','customer','service-provider']),bookingCltr.getAllBookingsForCustomer)
+app.get('/booking',authenticateUser,bookingCltr.getAllBookingsForCustomer)
 app.get('/booking/:bookingId',authenticateUser,authorizeUser(['admin','customer']),bookingCltr.getBookingById)
 app.put('/booking/admin/:bookingId',authenticateUser,authorizeUser(['admin']),checkSchema(bookingUpdateByAdmin),bookingCltr.updateByAdmin)
 app.put("/booking/provider/:bookingId",authenticateUser,authorizeUser(['service-provider']),checkSchema(bookingAccepted),bookingCltr.updateBookingStatus)
@@ -106,7 +107,6 @@ app.get("/customer-bookings",authenticateUser,authorizeUser(['customer']),bookin
 //Review
 app.post('/review/:bookingId',authenticateUser,authorizeUser(['customer']),checkSchema(reviewValidation),reviewcltr.create)
 // app.put('/review/provider/:providerId/review/:reviewId',authenticateUser,authorizeUser(['customer']),checkSchema(reviewValidation),reviewcltr.update)
-// app.get('/review/provider/:providerId/review/:reviewId',authenticateUser,authorizeUser(['customer','admin']),reviewcltr.single)
 app.get('/review/:serviceId',authenticateUser,reviewcltr.particular)
 app.get('/review',authenticateUser, reviewcltr.all)
 app.delete('/review/:id',authenticateUser,authorizeUser(['customer',]),reviewcltr.delete)
@@ -124,6 +124,7 @@ app.get('/all',authenticateUser,authorizeUser(['customer']),cartCtrl.allItems)
 app.post('/payment/:bookingId',authenticateUser,paymentsCtrl.pay)
 app.put('/payment-success/:id',paymentsCtrl.successUpdate)
 app.put('/payment-cancel/:id',paymentsCtrl.failerUpdate)
+app.get('/payment',authenticateUser,paymentsCtrl.list)
 
 app.listen(process.env.PORT,()=>{
     console.log('server running on 7777')

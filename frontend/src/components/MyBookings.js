@@ -41,9 +41,9 @@ export default function MyBookings () {
     }
 
     const handleBooking = (book) => {
-        return book.services.reduce((total, service) => {
-            return  book.amount / service.serviceId.price
-        }, 0)
+        if(book){
+            return  book.amount / book.services[0].serviceId.price
+        }
     }
 
     return (

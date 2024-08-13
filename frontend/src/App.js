@@ -1,7 +1,8 @@
+import '../src/index'
 import {Link,Route,Routes,useNavigate} from 'react-router-dom'
 import { Navbar, Nav, Container } from 'react-bootstrap';
-import '../src/index'
 import { useEffect } from 'react';
+import { useAuth } from './context/Auth';
 import axios from './config/axios';
 import Register from './components/Register';
 import Login from './components/Login';
@@ -26,9 +27,12 @@ import UpdateService from './components/UpdateService';
 import CustomerBookings from './components/CustomerBookings';
 import Success from './components/Success';
 import Cancel from './components/Cancel';
-
+import AllProviders from './adminDashboard/AllProviders';
+import AllServiceAdmin from './adminDashboard/AllServicesAdmin';
+import AllBookings from './adminDashboard/AllBookings';
+import AllPayments from './adminDashboard/AllPayments';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import { useAuth } from './context/Auth';
+
 
 function App() {
 
@@ -63,7 +67,7 @@ function App() {
        
        <Navbar bg="dark" variant="dark" expand="lg">
       <Container>
-        <Navbar.Brand href="/">Urban Company</Navbar.Brand>
+        <Navbar.Brand href="/">MyUrban</Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav">
           <Nav className="ml-auto">
@@ -101,6 +105,11 @@ function App() {
                     <>
                     <Nav.Link as={Link} to="/">Home</Nav.Link>
                     <Nav.Link as={Link} to="/account">Account</Nav.Link>
+                    <Nav.Link as={Link} to="/all-providers">All-Providers</Nav.Link>
+                    <Nav.Link as={Link} to="/all-services">All-Services</Nav.Link>
+                    <Nav.Link as={Link} to="/all-bookings">All-Bookings</Nav.Link>
+                    <Nav.Link as={Link} to="/all-payments">All-Payments</Nav.Link>
+
                     <Nav.Link as={Link} to="/" onClick={handleLogout}>Logout</Nav.Link>
                     </>
                   )
@@ -129,7 +138,7 @@ function App() {
               <AllService />
           </PrivateRoute>}/>
         <Route path='/account' element={
-          <PrivateRoute permittedRoles={['customer', 'service-provider']}>
+          <PrivateRoute permittedRoles={['customer', 'admin','service-provider']}>
               <Account />
           </PrivateRoute>}/>
           <Route path='/service' element={ <PrivateRoute permittedRoles={['service-provider','customer','admin']}>
@@ -169,6 +178,22 @@ function App() {
               <CustomerBookings />
           </PrivateRoute>}/>
           
+          <Route path='/all-providers' element={ <PrivateRoute permittedRoles={['admin']}>
+              <AllProviders />
+          </PrivateRoute>}/>
+
+          <Route path='/all-services' element={ <PrivateRoute permittedRoles={['admin']}>
+              <AllServiceAdmin />
+          </PrivateRoute>}/>
+
+          <Route path='/all-bookings' element={ <PrivateRoute permittedRoles={['admin']}>
+              <AllBookings />
+          </PrivateRoute>}/>
+
+          <Route path='/all-payments' element={ <PrivateRoute permittedRoles={['admin']}>
+              <AllPayments />
+          </PrivateRoute>}/>
+
           <Route path='/success' element={<Success/>}/>
           <Route path='/cancel' element={<Cancel/>}/>
 

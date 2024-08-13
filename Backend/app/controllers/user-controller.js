@@ -2,7 +2,7 @@ const User=require('../models/user-model')
 const bcryptjs=require('bcryptjs')
 const jwt=require('jsonwebtoken')
 const {validationResult}=require('express-validator')
-const sendOTPEmail=require('../utils/mail')
+const {sendOTPEmail,rejectedMail,accpetedMail}=require('../utils/mail')
 const userCltr={}
 
 userCltr.register=async(req,res)=>{
@@ -16,12 +16,12 @@ userCltr.register=async(req,res)=>{
     let isVerified=false
     try{
         if (existingUsers.length === 0) {
-            role = 'admin';
-            isVerified = true;
+            role = 'admin'
+            isVerified = true
         } else if (body.role === 'service-provider') {
-            role = 'service-provider';
+            role = 'service-provider'
         } else if (role === 'customer') {
-            isVerified = true;
+            isVerified = true
         }
 
         const salt = await bcryptjs.genSalt() 
@@ -72,30 +72,34 @@ userCltr.login = async (req, res) => {
 
 userCltr.unverified = async (req, res) => {
     try {
-        const unverifiedProviders = await User.find({ role: 'service-provider', isVerified: false, isRejected: false });
+        const unverifiedProviders = await User.find({ role: 'service-provider', isVerified: false})
         res.json(unverifiedProviders);
     } catch (err) {
-        res.status(500).json({ error: 'Failed to fetch unverified officers' });
+        res.status(500).json({ error: 'Failed to fetch unverified officers' })
     }
 }
 
 userCltr.verified = async(req, res) => {
     try {
         const { userId } = req.body;
-        await User.findByIdAndUpdate(userId, { isVerified: true });
-        res.json({ message: 'service-provider verified successfully' });
+        const user=await User.findById(userId)
+       await User.findByIdAndUpdate(userId, { isVerified: true })
+       await accpetedMail(user.email,user.username)
+        res.json({ message: 'service-provider verified successfully' })
     } catch (err) {
-        res.status(500).json({ error: 'Failed to verify officer' });
+        res.status(500).json({ error: 'Failed to verify officer' })
     }
 }
 
 userCltr.reject = async(req, res) => {
     try {
         const { userId } = req.body;
-        await User.findByIdAndUpdate(userId, { isRejected: true });
-        res.json({ message: 'service-provider rejected successfully' });
+        const user=await findById(userId)
+        await User.findByIdAndUpdate(userId, { isVerified: false })
+        await rejectedMail(user.email,user.username)
+        res.json({ message: 'service-provider rejected successfully' })
     } catch (err) {
-        res.status(500).json({ error: 'Failed to reject service-provider' });
+        res.status(500).json({ error: 'Failed to reject service-provider' })
     }
 }
 
@@ -177,7 +181,7 @@ userCltr.forgotPassword=async (req, res) => {
   
 
 userCltr.resetPassword=async (req, res) => {
-    const errors = validationResult(req);
+    const errors = validationResult(req)
     if (!errors.isEmpty()) {
         return res.status(400).json({ errors: errors.array() })
     }
