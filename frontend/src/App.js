@@ -31,6 +31,8 @@ import AllProviders from './adminDashboard/AllProviders';
 import AllServiceAdmin from './adminDashboard/AllServicesAdmin';
 import AllBookings from './adminDashboard/AllBookings';
 import AllPayments from './adminDashboard/AllPayments';
+import ProviderProfile from './components/ProviderProfile';
+import Map from './components/Map';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
 
@@ -82,6 +84,7 @@ function App() {
                  <>
                 <Nav.Link as={Link} to="/">Home</Nav.Link>
                 <Nav.Link as={Link} to="/account">Account</Nav.Link>
+                <Nav.Link as={Link} to="/customerprofile">Profile</Nav.Link>
                 <Nav.Link as={Link} to="/cart">Cart</Nav.Link>
                 <Nav.Link as={Link} to="/customer-bookings">My Bookings</Nav.Link>
                 <Nav.Link as={Link} to="/" onClick={handleLogout}>Logout</Nav.Link>
@@ -93,6 +96,7 @@ function App() {
                     <>
                     <Nav.Link as={Link} to="/">Home</Nav.Link>
                     <Nav.Link as={Link} to="/account">Account</Nav.Link>
+                    <Nav.Link as={Link} to="/providerprofile">Profile</Nav.Link>
                     <Nav.Link as={Link} to="/myservices">My Services</Nav.Link>
                     <Nav.Link as={Link} to="/mybookings">My Bookings</Nav.Link>
                     <Nav.Link as={Link} to="/" onClick={handleLogout}>Logout</Nav.Link>
@@ -145,12 +149,16 @@ function App() {
               <Service />
           </PrivateRoute>}/>
            
-          <Route path='/category/:category' element={ <PrivateRoute permittedRoles={['service-provider','customer','admin']}>
+          <Route path='/category/:category' element={ <PrivateRoute permittedRoles={['customer','admin']}>
               <ParticularList />
           </PrivateRoute>}/>
 
-          <Route path='/customerprofile' element={ <PrivateRoute permittedRoles={['customer','admin']}>
+          <Route path='/customerprofile' element={ <PrivateRoute permittedRoles={['customer']}>
               <CustomerProfile />
+          </PrivateRoute>}/>
+
+          <Route path='/providerprofile' element={ <PrivateRoute permittedRoles={['service-provider']}>
+              <ProviderProfile />
           </PrivateRoute>}/>
 
           <Route path='/cart' element={ <PrivateRoute permittedRoles={['customer','admin']}>
@@ -165,6 +173,10 @@ function App() {
        <Route path='/mybookings' element={ <PrivateRoute permittedRoles={['service-provider']}>
               <MyBookings />
           </PrivateRoute>}/>
+
+          <Route path='/map/:lat/:lng' element={ <PrivateRoute permittedRoles={['service-provider']}>
+              <Map />
+          </PrivateRoute>}/>
       
           <Route path='/myservices' element={ <PrivateRoute permittedRoles={['service-provider']}>
               <MyService />
@@ -173,6 +185,7 @@ function App() {
           <Route path='/update/:serviceId' element={ <PrivateRoute permittedRoles={['service-provider']}>
               <UpdateService />
           </PrivateRoute>}/>
+
 
           <Route path='/customer-bookings' element={ <PrivateRoute permittedRoles={['customer']}>
               <CustomerBookings />
@@ -193,6 +206,8 @@ function App() {
           <Route path='/all-payments' element={ <PrivateRoute permittedRoles={['admin']}>
               <AllPayments />
           </PrivateRoute>}/>
+
+         
 
           <Route path='/success' element={<Success/>}/>
           <Route path='/cancel' element={<Cancel/>}/>

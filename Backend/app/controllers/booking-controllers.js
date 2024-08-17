@@ -1,6 +1,7 @@
 const Booking=require('../models/booking-model')
 const Cart=require('../models/cart-model')
 const {validationResult}=require('express-validator')
+const {accpetedBookingMail,rejectedBookingMail} =require('../utils/mail')
 const bookingCltr={}
 
 
@@ -11,7 +12,7 @@ bookingCltr.createBooking = async (req, res) => {
     }
 
     try {
-        const { slot, address, date, description } = req.body
+        const { slot, address, date, description,lat,lng } = req.body
         const customerId = req.user.id
 
         const cart = await Cart.find({ customer: customerId }).populate('service').populate('service.serviceProvider')
@@ -62,6 +63,8 @@ bookingCltr.createBooking = async (req, res) => {
                 date,
                 description,
                 slot,
+                lat,
+                lng,
                 address,
                 amount: totalAmount
             })
@@ -77,7 +80,6 @@ bookingCltr.createBooking = async (req, res) => {
         res.status(400).json({ error: error.message })
     }
 }
-
 
 
 
@@ -101,21 +103,130 @@ bookingCltr.getBookingById = async (req, res) => {
 };
 
 
+// bookingCltr.getAllBookingsForCustomer = async (req, res) => {
+//     try {
+        
+//         const search=req.query.search || ''
+//         const sortBy=req.query.sortBy || 'amount'
+//         const order=req.query.order || 1
+//         const searchQuery={'services.serviceId.servicename':{$regex:search,$options:'i'}}
+//         const sortQuery={}
+//         sortQuery[sortBy]= order === 'asc' ? 1 : -1
+//         console.log(searchQuery)
+//         const bookings = await Booking.find()
+//             //.sort(sortQuery)
+//             .populate('customerId',(['username','email']))
+//             .populate('services.serviceId',(['servicename','category','price']))
+//             .populate('services.serviceProviderId',(['username','email']))
+
+//            // console.log(bookings)
+
+//         if(!bookings){
+//             return res.status(404).json({errors:'No Record Found'})
+//         }
+
+//         res.status(200).json(bookings)
+//     } catch (error) {
+//         res.status(400).json({ error: error.message })
+//     }
+// }
+
+
 bookingCltr.getAllBookingsForCustomer = async (req, res) => {
     try {
-        
-        const bookings = await Booking.find()
-            .populate('customerId',(['username','email']))
-            .populate('services.serviceId',(['servicename','category','price']))
-            .populate('services.serviceProviderId',(['username','email']))
+        const search = req.query.search || '';
+        const sortBy = req.query.sortBy || 'amount';
+        const order = req.query.order || 'asc';
+        const page = parseInt(req.query.page, 10) || 1;
+        const limit = parseInt(req.query.limit, 10) || 10;
 
-        
+        const sortOrder = order === 'asc' ? 1 : -1;
+        const sortQuery = {};
+        sortQuery[sortBy] = sortOrder;
 
-        res.status(200).json(bookings);
+        const bookings = await Booking.aggregate([
+            {
+                $lookup: {
+                    from: 'services',
+                    localField: 'services.serviceId',
+                    foreignField: '_id',
+                    as: 'serviceDetails'
+                }
+            },
+            {
+                $unwind: '$serviceDetails'
+            },
+            {
+                $match: {
+                    'serviceDetails.servicename': { $regex: search, $options: 'i' }
+                }
+            },
+            {
+                $sort: sortQuery
+            },
+            {
+                $lookup: {
+                    from: 'users',
+                    localField: 'customerId',
+                    foreignField: '_id',
+                    as: 'customerDetails'
+                }
+            },
+            {
+                $unwind: '$customerDetails'
+            },
+            {
+                $project: {
+                    _id: 1,
+                    customerId: '$customerDetails.username',
+                    services: {
+                        serviceId: '$serviceDetails._id',
+                        serviceName: '$serviceDetails.servicename',
+                        category: '$serviceDetails.category',
+                        price: '$serviceDetails.price'
+                    },
+                    date: 1,
+                    slot: 1,
+                    status: 1,
+                    address: 1,
+                    paymentStatus: 1,
+                    amount: 1,
+                    description: 1,
+                    isAccepted: 1,
+                    isReview: 1,
+                    createdAt: 1,
+                    updatedAt: 1
+                }
+            },
+            {
+                $facet: {
+                    metadata: [
+                        { $count: "totalCount" }
+                    ],
+                    data: [
+                        { $skip: (page - 1) * limit },
+                        { $limit: limit }
+                    ]
+                }
+            },
+            {
+                $unwind: '$metadata'
+            }
+        ]);
+
+        const bookingsData = bookings[0] ? bookings[0].data : [];
+        const totalCount = bookings[0] ? bookings[0].metadata.totalCount : 0;
+
+        res.status(200).json({
+            bookings: bookingsData,
+            totalCount,
+            totalPages: Math.ceil(totalCount / limit)
+        });
     } catch (error) {
-        res.status(400).json({ error: error.message })
+        console.error('Error:', error);
+        res.status(500).json({ error: 'Internal server error' });
     }
-}
+};
 
 
 
@@ -145,17 +256,25 @@ bookingCltr.updateBookingStatus = async (req, res) => {
         const { isAccepted } = req.body;
 
         const booking = await Booking.findById(bookingId)
+                  .populate('customerId',(['username','email']))
+                  .populate('services.serviceId',(['servicename','category','price']))
+                  .populate('services.serviceProviderId',(['username','email']))
         if (!booking) {
             return res.status(404).json({ message: 'Booking not found' })
         }
          
-        console.log(req.user.id.toString(),booking.services[0].serviceProviderId.toString())
+        console.log(booking)
+        console.log(req.user.id.toString(),booking.services[0].serviceProviderId._id.toString())
         
-        if (req.user.id.toString() !== booking.services[0].serviceProviderId.toString()) {
+        if (req.user.id.toString() !== booking.services[0].serviceProviderId._id.toString()) {
             return res.status(403).json({ message: 'Access denied' })
         }
-
-        booking.isAccepted = isAccepted
+       booking.isAccepted = isAccepted
+        if(isAccepted){
+            await accpetedBookingMail(booking.customerId.email,booking)
+        }else{
+            await rejectedBookingMail(booking.customerId.email,booking)
+        }
         await booking.save();
         res.status(200).json(booking)
     } catch (error) {

@@ -70,16 +70,16 @@ const serviceProviderUpdateValidation={
         },
         trim:true
     },
-    description :{
+   
+    address:{
         exists: {
-            errorMessage: 'serviceProviderName is required'
+            errorMessage: 'address is required'            
         },
         notEmpty: {
-            errorMessage: 'serviceProviderName cannot be blank'
+            errorMessage: 'address cannot be empty'
         },
         trim:true
     },
-   
    phone:{
         exists: {
             errorMessage: 'phone is required'            
@@ -91,27 +91,9 @@ const serviceProviderUpdateValidation={
             options: {min: 10, max: 10},
             errorMessage: 'phone should be 10 numbers'
         },
-        custom: {
-            options: async function(value){
-                const user = await ServiceProvider.findOne({ phone: value })
-                if(user) {
-                    throw new Error('phone no already taken')
-                } else {
-                    return true 
-                }
-            }
-        },
+        
         trim: true 
     },
-    address:{
-        exists: {
-            errorMessage: 'address is required'            
-        },
-        notEmpty: {
-            errorMessage: 'address cannot be empty'
-        },
-        trim:true
-    }
    
     
 }

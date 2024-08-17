@@ -9,16 +9,7 @@ const bookingValidation={
     trim:true,
     isDate:{
         errorMessage:' date is invaild'
-    },
-    // custom:{
-    //     options: function (value){
-    //       if(new Date(value) <= new Date()){
-    //          throw new Error('Date should be greater then today or today')
-    //       }else{
-    //         return true
-    //       }
-    //     }
-    // }
+    }
  },
  slot:{
     exists:{
@@ -37,6 +28,24 @@ const bookingValidation={
         errorMessage:'description cannot be empty'
     },
     trim:true,
+ },
+  lat:{
+    exists:{
+        errorMessage:'lat is required'
+    },
+    notEmpty:{
+        errorMessage:'lat cannot be empty'
+    },
+    trim:true,
+ },
+   lng:{
+    exists:{
+        errorMessage:'lng is required'
+    },
+    notEmpty:{
+        errorMessage:'lng cannot be empty'
+    },
+    trim:true,
  }
 }
 
@@ -52,15 +61,6 @@ const bookingUpdateValidation={
         trim:true,
         isDate:{
             errorMessage:' date is invaild'
-        },
-        custom:{
-            options: function (value){
-              if( new Date() > new Date(value) ){
-                 throw new Error('Date should be greater then today or today')
-              }else{
-                return true
-              }
-            }
         }
      },
      description:{
@@ -69,6 +69,24 @@ const bookingUpdateValidation={
         },
         notEmpty:{
             errorMessage:'description cannot be empty'
+        },
+        trim:true,
+     },
+     lat:{
+        exists:{
+            errorMessage:'lat is required'
+        },
+        notEmpty:{
+            errorMessage:'lat cannot be empty'
+        },
+        trim:true,
+     },
+     lng:{
+        exists:{
+            errorMessage:'lng is required'
+        },
+        notEmpty:{
+            errorMessage:'lng cannot be empty'
         },
         trim:true,
      }

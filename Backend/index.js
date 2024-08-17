@@ -24,6 +24,8 @@ const cors=require('cors')
 const path=require('path')
 const {checkSchema}=require('express-validator')
 const app=express()
+const checkPendingBookings=require('./app/utils/cron')
+checkPendingBookings()
 app.use(express.json())
 configdb()
 
@@ -77,7 +79,7 @@ app.put('/update-booking-status/:bookingId',authenticateUser,authorizeUser(['cus
 //ServiceProvider
 app.post('/provider/profile', authenticateUser, authorizeUser(['service-provider']), upload.fields([{ name: 'aadhaarPhoto', maxCount: 1 },
 { name: 'profilePic', maxCount: 1 }]),serviceProviderCltr.createProfile)
-app.put('/provider/profile', authenticateUser, authorizeUser(['service-provider']),  upload.fields([ { name: 'aadhaarPhoto', maxCount: 1 },{ name: 'profilePic', maxCount: 1 }]),checkSchema(serviceProviderValidation),serviceProviderCltr.updateProfile)
+app.put('/provider/profile', authenticateUser, authorizeUser(['service-provider']),  upload.fields([ { name: 'aadhaarPhoto', maxCount: 1 },{ name: 'profilePic', maxCount: 1 }]),checkSchema(serviceProviderUpdateValidation),serviceProviderCltr.updateProfile)
 app.get('/provider/all',serviceProviderCltr.allProviders)
 app.get('/provider',authenticateUser,authorizeUser(['service-provider','admin']),serviceProviderCltr.singleProvider)
 app.delete('/provider/:id',authenticateUser,authorizeUser(['service-provider']),serviceProviderCltr.delete)
@@ -85,12 +87,12 @@ app.get('/mybookings',authenticateUser,authorizeUser(['service-provider']),servi
 
 //Service
 app.post("/service",authenticateUser,authorizeUser(['service-provider']),checkSchema(serviceValidation),serviceCltr.create)
+app.get('/service',authenticateUser,authorizeUser(['service-provider']),serviceCltr.particular)
 app.put('/service/:serviceId',authenticateUser,authorizeUser(['service-provider']),checkSchema(serviceUpdateValidation),serviceCltr.update)
 app.get('/service/:serviceId',authenticateUser,serviceCltr.single)
-app.get('/service',authenticateUser,serviceCltr.all)
+app.get('/service/search',authenticateUser,serviceCltr.search)
 app.delete('/service/:serviceId',authenticateUser,authorizeUser(['service-provider']),serviceCltr.delete)
 app.get('/service/category/:category',authenticateUser,serviceCltr.category)
-
 
 //Booking
 app.post('/booking',authenticateUser,authorizeUser(['customer']),checkSchema(bookingValidation),bookingCltr.createBooking)

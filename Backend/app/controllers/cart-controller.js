@@ -284,7 +284,7 @@ cartCtrl.clearCart=async (req, res) => {
 cartCtrl.allItems=async (req, res) => {
   try {
     
-    const cartItem = await Cart.find().populate({
+    const cartItem = await Cart.find({customer:req.user.id}).populate({
       path: 'service',
        select: 'servicename price category',
       populate: {
@@ -294,9 +294,9 @@ cartCtrl.allItems=async (req, res) => {
     })
     console.log(cartItem)
 
-    if (!cartItem) {
-      return res.status(404).json({ error: ' Items not found' })
-    }
+    // if (!cartItem) {
+    //   return res.status(404).json({ error: ' Items not found' })
+    // }
 
     res.status(200).json(cartItem)
   } catch (error) {

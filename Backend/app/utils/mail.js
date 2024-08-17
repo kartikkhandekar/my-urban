@@ -67,8 +67,8 @@ const sendOTPEmail = async (email, username) => {
       console.log('Email sent successfully');
     
     } catch (error) {
-      console.error('Error sending OTP email:', error);
-      throw new Error('Failed to send OTP email');
+      console.error('Error sending  email:', error);
+      throw new Error('Failed to send  email');
     }
   };
 
@@ -99,4 +99,91 @@ const sendOTPEmail = async (email, username) => {
     }
   };
 
-module.exports={sendOTPEmail,accpetedMail,rejectedMail}
+
+ const accpetedBookingMail = async (email,bookingDetails) => {
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: email,
+      subject: 'Booking Accepted',
+      html: `
+        <h1>Booking Accepted</h1>
+        <p>Dear Customer,</p>
+        <p>Your booking for the following service has been accepted:</p>
+        <ul>
+         <li>Service: ${bookingDetails.services[0].serviceId.serviceName}</li>
+          <li>Date: ${bookingDetails.date}</li>
+          <li>Time: ${bookingDetails.slot}</li>
+          <li>Service Provider: ${bookingDetails.services[0].serviceProviderId.username}</li>
+        </ul>
+        <p>Thank you for choosing our service!</p>
+        <br>
+        <p>Best regards,</p>
+        <p>MyUrban</p>
+      `,
+  
+    };
+  
+    try {
+      await transporter.sendMail(mailOptions);
+      console.log('Email sent successfully');
+    
+    } catch (error) {
+      console.error('Error sending  email:', error);
+      throw new Error('Failed to send  email');
+    }
+  };
+
+  const rejectedBookingMail = async (email, bookingDetails) => {
+    const mailOptions = {
+      from: process.env.EMAIL,
+      to: email,
+      subject: 'Booking Rejected',
+      html: `
+        <h1>Booking Rejected</h1>
+        <p>Dear Customer,</p>
+        <p>We regret to inform you that your booking for the following service has been rejected:</p>
+        <ul>
+          <li>Service: ${bookingDetails.services[0].serviceId.serviceName}</li>
+          <li>Date: ${bookingDetails.date}</li>
+          <li>Time: ${bookingDetails.slot}</li>
+          <li>Service Provider: ${bookingDetails.services[0].serviceProviderId.username}</li>
+        </ul>
+        <p>If you have any questions or need further assistance, please contact our support team.</p>
+        <p>Thank you for understanding.</p>
+        <br>
+        <p>Best regards,</p>
+        <p>MyUrban</p>
+      `,
+  
+    };
+  
+    try {
+      await transporter.sendMail(mailOptions);
+      console.log('Email sent successfully');
+    
+    } catch (error) {
+      console.error('Error sending OTP email:', error);
+      throw new Error('Failed to send OTP email');
+    }
+  };
+
+
+
+  
+
+// Function to send an email
+const sendRemainderMail = async (to, subject, text) => {
+  try {
+      await transporter.sendMail({
+          from: process.env.EMAIL,
+          to,
+          subject,
+          text
+      });
+      console.log('Email sent successfully to', to);
+  } catch (error) {
+      console.error('Error sending email:', error);
+  }
+}
+
+module.exports={sendOTPEmail,sendRemainderMail,accpetedMail,rejectedMail,accpetedBookingMail,rejectedBookingMail}

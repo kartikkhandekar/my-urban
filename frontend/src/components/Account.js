@@ -90,6 +90,7 @@ const Account = () => {
                         <CardTitle tag="h6">Email</CardTitle>
                         <CardText className="text-muted">{user.account.email}</CardText>
                       </Col>
+                      
                     </Row>
                     {user.account.role === 'customer' && (
                       <>
@@ -118,6 +119,10 @@ const Account = () => {
                               src={profile.aadhaarPhoto} alt="Aadhaar"
                               style={{ width: '120px', height: '120px', objectFit: 'cover' }}
                             />
+                          </Col>
+                          <Col sm="6" className="mb-3">
+                            <CardTitle tag="h6">Phone No</CardTitle>
+                            <CardText className="text-muted">{profile.phone}</CardText>
                           </Col>
                         </Row>
                       </>

@@ -106,10 +106,34 @@ paymentsCntrl.failerUpdate=async(req,res)=>{
 
 paymentsCntrl.list=async(req,res)=>{
     try{
+
+        
+        const sortBy=req.query.sortBy ||'amount'
+        const order=req.query.order || 1
+        const sortQuery={}
+        sortQuery[sortBy]= order === 'asc' ? 1 : -1
+        const page = parseInt(req.query.page, 5) || 1 
+        const limit = parseInt(req.query.limit, 5) || 5
+
+        const skip = (page - 1) * limit
      const response=await Payment.find()
+                  .sort(sortQuery)
+                  .skip(skip)
+                  .limit(limit)
                   .populate('customerId',(['username','email']))
                   .populate('bookingId',(['slot','price','date','isAccepted']))
-     res.json(response)
+        if(!response){
+        return res.status(404).json({errors:'No record not found'})
+        }
+        const totalCount = await Service.countDocuments()
+
+     res.json({
+        response,
+         totalCount,
+        totalPages: Math.ceil(totalCount / limit),
+        currentPage: page,
+        pageSize: limit
+    })
     }catch(err){
         console.log(err)
         res.status(501).json({error:"internal server error"})

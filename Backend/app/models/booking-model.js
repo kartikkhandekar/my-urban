@@ -48,6 +48,8 @@ const bookingSchema = new Schema({
             ref: 'User'
         }
     }],
+    lat:String,
+    lng:String,
     date: Date,
     slot:String,
     status: {

@@ -53,17 +53,71 @@ serviceCltr.single=async(req,res)=>{
     }
 }
 
-serviceCltr.all=async(req,res)=>{
+serviceCltr.search=async(req,res)=>{
     try{
-        const service=await Service.find().populate('serviceProvider',(['username','email']))
-        if(!service){
-            return res.status(404).json({error:'No Records Found'})
-        }
-        res.status(200).json(service)
-    }catch(err){
+        const sortBy=req.query.sortBy ||'servicename'
+        const order=req.query.order || 1
+        const sortQuery={}
+        sortQuery[sortBy]= order === 'asc' ? 1 : -1
+        const page = parseInt(req.query.page, 5) || 1 
+        const limit = parseInt(req.query.limit, 5) || 5
+
+        const skip = (page - 1) * limit;
+        const services=await Service
+                               .find()
+                               .sort(sortQuery)
+                               .skip(skip)
+                               .limit(limit)
+                               .populate('serviceProvider',(['username','email']))        
+          
+         const totalCount = await Service.countDocuments();
+
+        res.status(200).json({
+            services,
+            totalCount,
+            totalPages: Math.ceil(totalCount / limit),
+            currentPage: page,
+            pageSize: limit
+        })
+     }catch(err){
         res.status(500).json({error:'Somthing went wrong'})
     }
 }
+
+serviceCltr.particular=async(req,res)=>{
+    try{
+        const sortBy=req.query.sortBy ||'servicename'
+        const order=req.query.order || 1
+        const sortQuery={}
+        sortQuery[sortBy]= order === 'asc' ? 1 : -1
+        const page = parseInt(req.query.page, 5) || 1 
+        const limit = parseInt(req.query.limit, 5) || 5
+
+        const skip = (page - 1) * limit;
+        const services=await Service.find({serviceProvider:req.user.id})
+               .populate('serviceProvider',(['username','email'])) 
+               .sort(sortQuery)
+               .skip(skip)
+               .limit(limit)       
+        if(!services){
+            return res.status(404).json({errors:"No service found"})
+        }
+         
+        const totalCount = await Service.countDocuments();
+
+        res.status(200).json({
+            services,
+            totalCount,
+            totalPages: Math.ceil(totalCount / limit),
+            currentPage: page,
+            pageSize: limit
+        })
+    }catch(err){
+        res.status(500).json({error:'Somthing went wrong'})
+
+    }
+}
+
 
 serviceCltr.delete=async(req,res)=>{
     try{
@@ -90,8 +144,10 @@ serviceCltr.category=async(req,res)=>{
         res.status(200).json(services)
     } catch (error) {
         console.error(error);
-        throw new Error('Error fetching services by category');
+        throw new Error('Error fetching services by category')
     }
 }
+
+
 
 module.exports=serviceCltr

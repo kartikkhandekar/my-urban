@@ -5,13 +5,14 @@ import axios from '../config/axios';
 import NoBookings from './NoBookings';
 import { Table, Button } from 'reactstrap';
 import { toast } from 'react-toastify';
+import { useNavigate } from 'react-router-dom';
 
-export default function MyBookings () {
-    const [bookings, setBookings] = useState([])
-
+export default function MyBookings() {
+    const [bookings, setBookings] = useState([]);
+    const navigate=useNavigate()
     useEffect(() => {
-        fetchBookings()
-    }, [])
+        fetchBookings();
+    }, []);
 
     const fetchBookings = async () => {
         try {
@@ -22,9 +23,9 @@ export default function MyBookings () {
             });
             setBookings(response.data);
         } catch (error) {
-            console.error('Error fetching bookings:', error)
+            console.error('Error fetching bookings:', error);
         }
-    }
+    };
 
     const updateBookingStatus = async (id, isAccepted) => {
         try {
@@ -32,18 +33,22 @@ export default function MyBookings () {
                 headers: {
                     Authorization: localStorage.getItem('token')
                 }
-            })
-            toast.success(`Booking ${isAccepted ? 'accepted' : 'rejected'}`)
-            fetchBookings()
+            });
+            toast.success(`Booking ${isAccepted ? 'accepted' : 'rejected'}`);
+            fetchBookings();
         } catch (error) {
-           alert(`Error ${isAccepted ? 'accepting' : 'rejecting'} booking:`, error)
+            toast.error(`Error ${isAccepted ? 'accepting' : 'rejecting'} booking: ${error.message}`);
         }
-    }
+    };
 
     const handleBooking = (book) => {
-        if(book){
-            return  book.amount / book.services[0].serviceId.price
+        if (book) {
+            return book.amount / book.services[0].serviceId.price;
         }
+    };
+
+    const handleLoc= (lat,lng)=>{
+       navigate(`/map/${lat}/${lng}`)
     }
 
     return (
@@ -63,6 +68,7 @@ export default function MyBookings () {
                                 <th className="text-center">Slot</th>
                                 <th className="text-center">Status</th>
                                 <th className="text-center">Booking</th>
+                                <th className="text-center">View Address</th>
                                 <th className="text-center">Actions</th>
                             </tr>
                         </thead>
@@ -74,7 +80,7 @@ export default function MyBookings () {
                                         (s) => s.serviceId.servicename === service.serviceId.servicename
                                     );
                                     if (!exists) {
-                                        acc.push(service)
+                                        acc.push(service);
                                     }
                                     return acc;
                                 }, []);
@@ -88,11 +94,26 @@ export default function MyBookings () {
                                         <td className="text-center">{booking.amount}</td>
                                         <td className="text-center">{new Date(booking.date).toLocaleDateString()}</td>
                                         <td className="text-center">{booking.slot}</td>
-                                        <td className="text-center">{booking.isAccepted ? 'Accepted' : 'Pending'}</td>
+                                        <td className="text-center">{booking.isAccepted ? 'Accepted' : service.isAccepted === false ? 'Rejected' : 'Pending'}</td>
                                         <td className="text-center">{handleBooking(booking)}</td>
+                                        <td className="text-center"> <Button 
+                                                color="primary" 
+                                                onClick={() => handleLoc(booking.lat, booking.lng)} >
+                                                Show
+                                            </Button></td>
                                         <td className="text-center">
-                                            <Button color="success" onClick={() => updateBookingStatus(booking._id, true)} disabled={booking.isAccepted}>Accept</Button>{' '}
-                                            <Button color="danger" onClick={() => updateBookingStatus(booking._id, false)} disabled={!booking.isAccepted && service.isAccepted !== false}>Reject</Button>
+                                            <Button 
+                                                color="success" 
+                                                onClick={() => updateBookingStatus(booking._id, true)} 
+                                                disabled={booking.isAccepted || service.isAccepted === false}>
+                                                Accept
+                                            </Button>{'  '}
+                                            <Button 
+                                                color="danger" 
+                                                onClick={() => updateBookingStatus(booking._id, false)} 
+                                                disabled={booking.isAccepted || service.isAccepted === false}>
+                                                Reject
+                                            </Button>
                                         </td>
                                     </tr>
                                 ));
@@ -104,6 +125,6 @@ export default function MyBookings () {
                 <NoBookings />
             )}
         </>
-    )
+    );
 }
 
