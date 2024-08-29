@@ -53,32 +53,10 @@ serviceCltr.single=async(req,res)=>{
     }
 }
 
-serviceCltr.search=async(req,res)=>{
+serviceCltr.all=async(req,res)=>{
     try{
-        const sortBy=req.query.sortBy ||'servicename'
-        const order=req.query.order || 1
-        const sortQuery={}
-        sortQuery[sortBy]= order === 'asc' ? 1 : -1
-        const page = parseInt(req.query.page, 5) || 1 
-        const limit = parseInt(req.query.limit, 5) || 5
-
-        const skip = (page - 1) * limit;
-        const services=await Service
-                               .find()
-                               .sort(sortQuery)
-                               .skip(skip)
-                               .limit(limit)
-                               .populate('serviceProvider',(['username','email']))        
-          
-         const totalCount = await Service.countDocuments();
-
-        res.status(200).json({
-            services,
-            totalCount,
-            totalPages: Math.ceil(totalCount / limit),
-            currentPage: page,
-            pageSize: limit
-        })
+        const services=await Service.find().populate('serviceProvider',(['username','email']))    
+        res.status(200).json( services)
      }catch(err){
         res.status(500).json({error:'Somthing went wrong'})
     }

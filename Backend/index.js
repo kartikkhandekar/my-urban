@@ -33,16 +33,15 @@ configdb()
 
 
 const corsOptions = {
-  origin: 'http://localhost:3000', // your frontend server URL
-  credentials: true, // Allow credentials (cookies, authorization headers, TLS client certificates)
+  origin: 'http://localhost:3000', 
+  credentials: true, 
 };
 
 app.use(cors(corsOptions));
 
 app.use(express.urlencoded({ extended: false }));
-// Serve static files from the 'uploads' directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'), {
-    // Ensure CORS headers allow the specified origin and credentials
+    
     setHeaders: (res, path, stat) => {
       res.set('Access-Control-Allow-Origin', 'http://localhost:3000');
       res.set('Access-Control-Allow-Credentials', 'true');
@@ -87,10 +86,10 @@ app.get('/mybookings',authenticateUser,authorizeUser(['service-provider']),servi
 
 //Service
 app.post("/service",authenticateUser,authorizeUser(['service-provider']),checkSchema(serviceValidation),serviceCltr.create)
+app.get('/service/all',authenticateUser,serviceCltr.all)
 app.get('/service',authenticateUser,authorizeUser(['service-provider']),serviceCltr.particular)
 app.put('/service/:serviceId',authenticateUser,authorizeUser(['service-provider']),checkSchema(serviceUpdateValidation),serviceCltr.update)
 app.get('/service/:serviceId',authenticateUser,serviceCltr.single)
-app.get('/service/search',authenticateUser,serviceCltr.search)
 app.delete('/service/:serviceId',authenticateUser,authorizeUser(['service-provider']),serviceCltr.delete)
 app.get('/service/category/:category',authenticateUser,serviceCltr.category)
 

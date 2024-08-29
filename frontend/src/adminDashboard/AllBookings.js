@@ -23,7 +23,8 @@ export default function AllBookings() {
             console.error(error)
             toast.error('Failed to fetch bookings')
         }
-    };
+    }
+    console.log(bookings)
 
     const handleBooking = (booking) => {
         if (booking) {

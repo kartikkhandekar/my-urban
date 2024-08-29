@@ -134,94 +134,12 @@ bookingCltr.getBookingById = async (req, res) => {
 
 bookingCltr.getAllBookingsForCustomer = async (req, res) => {
     try {
-        const search = req.query.search || '';
-        const sortBy = req.query.sortBy || 'amount';
-        const order = req.query.order || 'asc';
-        const page = parseInt(req.query.page, 10) || 1;
-        const limit = parseInt(req.query.limit, 10) || 10;
+       const booking=await Booking.find()
+                    .populate('customerId',(['username','email']))
+                    .populate('services.serviceId',(['servicename','category','price']))
+                    .populate('services.serviceProviderId',(['username','email']))
 
-        const sortOrder = order === 'asc' ? 1 : -1;
-        const sortQuery = {};
-        sortQuery[sortBy] = sortOrder;
-
-        const bookings = await Booking.aggregate([
-            {
-                $lookup: {
-                    from: 'services',
-                    localField: 'services.serviceId',
-                    foreignField: '_id',
-                    as: 'serviceDetails'
-                }
-            },
-            {
-                $unwind: '$serviceDetails'
-            },
-            {
-                $match: {
-                    'serviceDetails.servicename': { $regex: search, $options: 'i' }
-                }
-            },
-            {
-                $sort: sortQuery
-            },
-            {
-                $lookup: {
-                    from: 'users',
-                    localField: 'customerId',
-                    foreignField: '_id',
-                    as: 'customerDetails'
-                }
-            },
-            {
-                $unwind: '$customerDetails'
-            },
-            {
-                $project: {
-                    _id: 1,
-                    customerId: '$customerDetails.username',
-                    services: {
-                        serviceId: '$serviceDetails._id',
-                        serviceName: '$serviceDetails.servicename',
-                        category: '$serviceDetails.category',
-                        price: '$serviceDetails.price'
-                    },
-                    date: 1,
-                    slot: 1,
-                    status: 1,
-                    address: 1,
-                    paymentStatus: 1,
-                    amount: 1,
-                    description: 1,
-                    isAccepted: 1,
-                    isReview: 1,
-                    createdAt: 1,
-                    updatedAt: 1
-                }
-            },
-            {
-                $facet: {
-                    metadata: [
-                        { $count: "totalCount" }
-                    ],
-                    data: [
-                        { $skip: (page - 1) * limit },
-                        { $limit: limit }
-                    ]
-                }
-            },
-            {
-                $unwind: '$metadata'
-            }
-        ]);
-
-        const bookingsData = bookings[0] ? bookings[0].data : [];
-        const totalCount = bookings[0] ? bookings[0].metadata.totalCount : 0;
-
-        res.status(200).json({
-            bookings: bookingsData,
-            totalCount,
-            totalPages: Math.ceil(totalCount / limit)
-        });
+        res.status(200).json(booking);
     } catch (error) {
         console.error('Error:', error);
         res.status(500).json({ error: 'Internal server error' });

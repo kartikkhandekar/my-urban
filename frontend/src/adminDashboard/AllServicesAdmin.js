@@ -13,12 +13,12 @@ export default function AllServiceAdmin() {
 
     const fetchUsers = async () => {
         try {
-            const response = await axios.get('/service',{
+            const response = await axios.get('/service/all',{
                 headers:{
                     Authorization:localStorage.getItem('token')
                 }
             });
-            setServices(response.data);
+            setServices(response.data)
         } catch (error) {
             console.log(error)
             toast.error('Failed to fetch users');

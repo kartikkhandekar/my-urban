@@ -336,7 +336,7 @@ export default function CartComponent(){
 
   return (
     <div>
-      <h1>Cart</h1>
+      <h1 style={{textAlign:'center'}}>Cart</h1>
       <table className="table">
         <thead>
           <tr>

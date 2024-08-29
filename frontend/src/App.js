@@ -14,7 +14,6 @@ import ResetPassword from './components/ResetPassword';
 import PrivateRoute from './components/PrivateRoute';
 import Account from './components/Account';
 import Service from './components/Service';
-import AllService from './components/AllService';
 import ParticularList from './components/ParticularList';
 import Icons from './components/Icons';
 import CustomerProfile from './components/CustomerProfile';
@@ -137,10 +136,7 @@ function App() {
         <Route path='/resetpassword' element={<ResetPassword/>}/>
         <Route path='/icons' element={<Icons/>}/>
          <Route path='/emptycart' element={<EmptyCart/>}/>
-        <Route path='/allservice' element={
-          <PrivateRoute permittedRoles={['customer', 'service-provider','admin']}>
-              <AllService />
-          </PrivateRoute>}/>
+       
         <Route path='/account' element={
           <PrivateRoute permittedRoles={['customer', 'admin','service-provider']}>
               <Account />
@@ -149,7 +145,7 @@ function App() {
               <Service />
           </PrivateRoute>}/>
            
-          <Route path='/category/:category' element={ <PrivateRoute permittedRoles={['customer','admin']}>
+          <Route path='/category/:category' element={ <PrivateRoute permittedRoles={['customer']}>
               <ParticularList />
           </PrivateRoute>}/>
 
@@ -161,7 +157,7 @@ function App() {
               <ProviderProfile />
           </PrivateRoute>}/>
 
-          <Route path='/cart' element={ <PrivateRoute permittedRoles={['customer','admin']}>
+          <Route path='/cart' element={ <PrivateRoute permittedRoles={['customer']}>
               <Cart />
           </PrivateRoute>}/>
          
