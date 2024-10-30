@@ -1,5 +1,3 @@
-
-
 import React, { useState, useEffect } from 'react';
 import axios from '../config/axios';
 import NoBookings from './NoBookings';
@@ -9,7 +7,8 @@ import { useNavigate } from 'react-router-dom';
 
 export default function MyBookings() {
     const [bookings, setBookings] = useState([]);
-    const navigate=useNavigate()
+    const navigate = useNavigate();
+
     useEffect(() => {
         fetchBookings();
     }, []);
@@ -27,15 +26,15 @@ export default function MyBookings() {
         }
     };
 
-    const updateBookingStatus = async (id, isAccepted) => {
+    const updateBookingStatus = async (id, isAccepted, isRejected) => {
         try {
-            await axios.put(`/booking/provider/${id}`, { isAccepted }, {
+            await axios.put(`/booking/provider/${id}`, { isAccepted, isRejected }, {
                 headers: {
                     Authorization: localStorage.getItem('token')
                 }
             });
             toast.success(`Booking ${isAccepted ? 'accepted' : 'rejected'}`);
-            fetchBookings();
+            fetchBookings(); // Optionally re-fetch bookings to update status
         } catch (error) {
             toast.error(`Error ${isAccepted ? 'accepting' : 'rejecting'} booking: ${error.message}`);
         }
@@ -47,9 +46,9 @@ export default function MyBookings() {
         }
     };
 
-    const handleLoc= (lat,lng)=>{
-       navigate(`/map/${lat}/${lng}`)
-    }
+    const handleLoc = (lat, lng) => {
+        navigate(`/map/${lat}/${lng}`);
+    };
 
     return (
         <>
@@ -74,7 +73,6 @@ export default function MyBookings() {
                         </thead>
                         <tbody>
                             {bookings.map((booking) => {
-                                // Filter out duplicate services by name
                                 const uniqueServices = booking.services.reduce((acc, service) => {
                                     const exists = acc.find(
                                         (s) => s.serviceId.servicename === service.serviceId.servicename
@@ -94,24 +92,37 @@ export default function MyBookings() {
                                         <td className="text-center">{booking.amount}</td>
                                         <td className="text-center">{new Date(booking.date).toLocaleDateString()}</td>
                                         <td className="text-center">{booking.slot}</td>
-                                        <td className="text-center">{booking.isAccepted ? 'Accepted' : service.isAccepted === false ? 'Rejected' : 'Pending'}</td>
-                                        <td className="text-center">{handleBooking(booking)}</td>
-                                        <td className="text-center"> <Button 
-                                                color="primary" 
-                                                onClick={() => handleLoc(booking.lat, booking.lng)} >
-                                                Show
-                                            </Button></td>
                                         <td className="text-center">
-                                            <Button 
-                                                color="success" 
-                                                onClick={() => updateBookingStatus(booking._id, true)} 
-                                                disabled={booking.isAccepted || service.isAccepted === false}>
+                                            {booking.isAccepted
+                                                ? 'Accepted'
+                                                : booking.isRejected
+                                                ? 'Rejected'
+                                                : 'Pending'}
+                                        </td>
+                                        <td className="text-center">{handleBooking(booking)}</td>
+                                        <td className="text-center">
+                                            {booking.lat && (
+                                                <Button
+                                                    color="primary"
+                                                    onClick={() => handleLoc(booking.lat, booking.lng)}
+                                                >
+                                                    Show
+                                                </Button>
+                                            )}
+                                        </td>
+                                        <td className="text-center">
+                                            <Button
+                                                color="success"
+                                                onClick={() => updateBookingStatus(booking._id, true, false)}
+                                                disabled={booking.isAccepted || booking.isRejected}
+                                            >
                                                 Accept
-                                            </Button>{'  '}
-                                            <Button 
-                                                color="danger" 
-                                                onClick={() => updateBookingStatus(booking._id, false)} 
-                                                disabled={booking.isAccepted || service.isAccepted === false}>
+                                            </Button>{' '}
+                                            <Button
+                                                color="danger"
+                                                onClick={() => updateBookingStatus(booking._id, false, true)}
+                                                disabled={booking.isAccepted || booking.isRejected}
+                                            >
                                                 Reject
                                             </Button>
                                         </td>
@@ -127,4 +138,3 @@ export default function MyBookings() {
         </>
     );
 }
-

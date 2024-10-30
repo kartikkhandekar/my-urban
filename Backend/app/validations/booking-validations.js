@@ -9,6 +9,22 @@ const bookingValidation={
     trim:true,
     isDate:{
         errorMessage:' date is invaild'
+    },
+    custom: {
+        options: function (value, { req }) {
+          const inputDate = new Date(value);
+          const today = new Date();
+          
+          // Resetting the time to midnight for comparison
+          today.setHours(0, 0, 0, 0);
+          inputDate.setHours(0, 0, 0, 0);
+  
+          if (inputDate < today) {
+            throw new Error('Date should not be greater than today')
+          } else {
+            return true;
+          }
+        }
     }
  },
  slot:{
@@ -28,25 +44,8 @@ const bookingValidation={
         errorMessage:'description cannot be empty'
     },
     trim:true,
- },
-  lat:{
-    exists:{
-        errorMessage:'lat is required'
-    },
-    notEmpty:{
-        errorMessage:'lat cannot be empty'
-    },
-    trim:true,
- },
-   lng:{
-    exists:{
-        errorMessage:'lng is required'
-    },
-    notEmpty:{
-        errorMessage:'lng cannot be empty'
-    },
-    trim:true,
  }
+  
 }
 
 
@@ -69,24 +68,6 @@ const bookingUpdateValidation={
         },
         notEmpty:{
             errorMessage:'description cannot be empty'
-        },
-        trim:true,
-     },
-     lat:{
-        exists:{
-            errorMessage:'lat is required'
-        },
-        notEmpty:{
-            errorMessage:'lat cannot be empty'
-        },
-        trim:true,
-     },
-     lng:{
-        exists:{
-            errorMessage:'lng is required'
-        },
-        notEmpty:{
-            errorMessage:'lng cannot be empty'
         },
         trim:true,
      }

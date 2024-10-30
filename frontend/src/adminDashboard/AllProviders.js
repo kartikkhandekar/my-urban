@@ -20,10 +20,10 @@ export default function AllProviders() {
         }
     };
 
-    const handleAction = async (userId, action) => {
+    const handleAction = async (userId, accept,reject) => {
         try {
-            if(action) {
-                await axios.post(`/verify-providers`,{userId},{
+            if(accept) {
+                await axios.post(`/verify-providers`,{userId,accept,reject},{
                     headers:{
                         Authorization:localStorage.getItem('token')
                     }
@@ -31,7 +31,7 @@ export default function AllProviders() {
                 toast.success(`User accepted successfully`);
                 fetchUsers();
             } else {
-                await axios.post(`/reject-providers`,{userId},{
+                await axios.post(`/reject-providers`,{userId,accept,reject},{
                     headers:{
                         Authorization:localStorage.getItem('token')
                     }
@@ -70,15 +70,15 @@ export default function AllProviders() {
                                         <>
                                             <Button 
                                                 color="success" 
-                                                onClick={() => handleAction(user._id, true)}
+                                                onClick={() => handleAction(user._id, true,false)}
                                                 disabled={user.isVerified}>
                                                 Accept
                                             </Button>
                                             {' '}
                                             <Button 
                                                 color="danger" 
-                                                onClick={() => handleAction(user._id, false)}
-                                                disabled={user.isVerified}>
+                                                onClick={() => handleAction(user._id, false,true)}
+                                                disabled={user.isRejected}>
                                                 Reject
                                             </Button>
                                         </>

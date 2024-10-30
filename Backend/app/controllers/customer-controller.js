@@ -5,10 +5,10 @@ const customerCltr={}
 
 customerCltr.createProfile = async (req, res) => {
   console.log('Request received at:', new Date());
-  console.log('Request body:', JSON.stringify(req.body, null, 2)); // Log the body as a formatted JSON string
+  console.log('Request body:', JSON.stringify(req.body, null, 2))
 
   if (req.file) {
-      console.log('Uploaded file:', JSON.stringify(req.file, null, 2)); // Log the file as a formatted JSON string
+      console.log('Uploaded file:', JSON.stringify(req.file, null, 2))
   }
 
   const errors = validationResult(req);

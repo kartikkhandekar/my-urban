@@ -61,8 +61,9 @@ export default function CustomerBookings () {
         return <NoBookings />
     }
 
-    const getButtonDetails = (status, paymentStatus) => {
-        if (status === 'pending') {
+    const getButtonDetails = (status, paymentStatus, accept,reject) => {
+        console.log(accept,reject)
+        if (status === 'pending' && accept == true && reject == false ) {
             return { text: 'Complete', color: 'success', newStatus: 'completed' }
         } else if (status === 'completed' && paymentStatus === 'Successful') {
             return { text: 'Review', color: 'primary', newStatus: 'review' }
@@ -82,7 +83,7 @@ export default function CustomerBookings () {
             <h1 className="text-center mb-4">My Bookings</h1>
             <Row>
                 {bookings.map((booking) => {
-                    const { text, color, newStatus } = getButtonDetails(booking.status, booking.paymentStatus)
+                    const { text, color, newStatus } = getButtonDetails(booking.status, booking.paymentStatus,booking.isAccepted,booking.isRejected)
 
                     return (
                         <Col sm="6" lg="4" className="mb-4" key={booking._id}>

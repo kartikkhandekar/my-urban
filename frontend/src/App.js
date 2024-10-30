@@ -107,7 +107,6 @@ function App() {
                   user.account.role === 'admin' &&(
                     <>
                     <Nav.Link as={Link} to="/">Home</Nav.Link>
-                    <Nav.Link as={Link} to="/account">Account</Nav.Link>
                     <Nav.Link as={Link} to="/all-providers">All-Providers</Nav.Link>
                     <Nav.Link as={Link} to="/all-services">All-Services</Nav.Link>
                     <Nav.Link as={Link} to="/all-bookings">All-Bookings</Nav.Link>

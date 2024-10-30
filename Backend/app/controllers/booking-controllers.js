@@ -72,6 +72,7 @@ bookingCltr.createBooking = async (req, res) => {
             return await newBooking.save()
         })
 
+        
         const savedBookings = await Promise.all(bookingPromises)
 
         res.status(201).json(savedBookings)
@@ -171,8 +172,8 @@ bookingCltr.updateBookingStatus = async (req, res) => {
     }
     try {
         const { bookingId } = req.params;
-        const { isAccepted } = req.body;
-
+        const { isAccepted,isRejected } = req.body;
+       
         const booking = await Booking.findById(bookingId)
                   .populate('customerId',(['username','email']))
                   .populate('services.serviceId',(['servicename','category','price']))
@@ -188,7 +189,9 @@ bookingCltr.updateBookingStatus = async (req, res) => {
             return res.status(403).json({ message: 'Access denied' })
         }
        booking.isAccepted = isAccepted
-        if(isAccepted){
+       booking.isRejected = isRejected
+       console.log(isAccepted)
+        if(isAccepted === 'true'){
             await accpetedBookingMail(booking.customerId.email,booking)
         }else{
             await rejectedBookingMail(booking.customerId.email,booking)

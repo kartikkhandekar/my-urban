@@ -292,11 +292,8 @@ cartCtrl.allItems=async (req, res) => {
         select: 'username email'
       }
     })
-    console.log(cartItem)
 
-    // if (!cartItem) {
-    //   return res.status(404).json({ error: ' Items not found' })
-    // }
+    
 
     res.status(200).json(cartItem)
   } catch (error) {

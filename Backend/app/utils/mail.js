@@ -101,6 +101,7 @@ const sendOTPEmail = async (email, username) => {
 
 
  const accpetedBookingMail = async (email,bookingDetails) => {
+    
     const mailOptions = {
       from: process.env.EMAIL,
       to: email,
@@ -110,7 +111,7 @@ const sendOTPEmail = async (email, username) => {
         <p>Dear Customer,</p>
         <p>Your booking for the following service has been accepted:</p>
         <ul>
-         <li>Service: ${bookingDetails.services[0].serviceId.serviceName}</li>
+         <li>Service: ${bookingDetails.services[0].serviceId.servicename}</li>
           <li>Date: ${bookingDetails.date}</li>
           <li>Time: ${bookingDetails.slot}</li>
           <li>Service Provider: ${bookingDetails.services[0].serviceProviderId.username}</li>
@@ -124,6 +125,8 @@ const sendOTPEmail = async (email, username) => {
     };
   
     try {
+      
+      console.log('accepted')
       await transporter.sendMail(mailOptions);
       console.log('Email sent successfully');
     
@@ -143,7 +146,7 @@ const sendOTPEmail = async (email, username) => {
         <p>Dear Customer,</p>
         <p>We regret to inform you that your booking for the following service has been rejected:</p>
         <ul>
-          <li>Service: ${bookingDetails.services[0].serviceId.serviceName}</li>
+          <li>Service: ${bookingDetails.services[0].serviceId.servicename}</li>
           <li>Date: ${bookingDetails.date}</li>
           <li>Time: ${bookingDetails.slot}</li>
           <li>Service Provider: ${bookingDetails.services[0].serviceProviderId.username}</li>
@@ -158,6 +161,8 @@ const sendOTPEmail = async (email, username) => {
     };
   
     try {
+      console.log(bookingDetails.services[0].serviceId.servicename)
+      console.log('rejected')
       await transporter.sendMail(mailOptions);
       console.log('Email sent successfully');
     

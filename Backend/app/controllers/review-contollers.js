@@ -31,13 +31,16 @@ reviewcltr.create = async (req, res) => {
     });
 
     const noOfReviews = await Review.countDocuments({ service: serviceId })
+    console.log(noOfReviews)
     const service = await Service.findById(serviceId)
     if (!service) {
       return res.status(404).json({ error: "Service not found" })
     }
 
     const prevRating = service.rating;
-    const newRating = (prevRating * noOfReviews + rating) / (noOfReviews + 1)
+    console.log(prevRating)
+    const newRating = (prevRating * noOfReviews) + rating / (noOfReviews + 1)
+   
     service.rating = newRating;
 
     await service.save()

@@ -71,6 +71,10 @@ const bookingSchema = new Schema({
         type: Boolean,
         default: false
     },
+    isRejected: {
+        type: Boolean,
+        default: false
+    },
     isReview: {
         type: Boolean,
         default: false,

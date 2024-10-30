@@ -20,7 +20,7 @@ userCltr.register=async(req,res)=>{
             isVerified = true
         } else if (body.role === 'service-provider') {
             role = 'service-provider'
-        } else if (role === 'customer') {
+        } else if (body.role === 'customer') {
             isVerified = true
         }
 
@@ -83,7 +83,7 @@ userCltr.verified = async(req, res) => {
     try {
         const { userId } = req.body;
         const user=await User.findById(userId)
-       await User.findByIdAndUpdate(userId, { isVerified: true })
+       await User.findByIdAndUpdate(userId, { isVerified: true,isRejected:false })
        await accpetedMail(user.email,user.username)
         res.json({ message: 'service-provider verified successfully' })
     } catch (err) {
@@ -95,7 +95,7 @@ userCltr.reject = async(req, res) => {
     try {
         const { userId } = req.body;
         const user=await findById(userId)
-        await User.findByIdAndUpdate(userId, { isVerified: false })
+        await User.findByIdAndUpdate(userId, { isVerified: false,isRejected:true })
         await rejectedMail(user.email,user.username)
         res.json({ message: 'service-provider rejected successfully' })
     } catch (err) {
